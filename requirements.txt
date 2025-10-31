@@ -1,4 +1,4 @@
-pandas>=2.3.3
-streamlit>=1.51.0
-streamlit-sortables>=0.2.0
-requests>=2.32.0
+pandas
+streamlit
+streamlit-sortables==0.2.0
+requests
