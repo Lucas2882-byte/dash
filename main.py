@@ -179,81 +179,13 @@ def show_tasks_table_dialog(person_name, tasks_df):
                 key="tasks_editor"
             )
             
-            st.markdown("""
+            js_path = os.path.join(os.path.dirname(__file__), 'row_colors.js')
+            with open(js_path) as f:
+                js_code = f.read()
+            st.markdown(f"""
                 <script>
-                (function() {
-                    function applyRowColorsInline() {
-                        const dialog = document.querySelector('[data-testid="stDialog"]');
-                        if (!dialog) return 0;
-                        
-                        const dataframe = dialog.querySelector('div[data-testid="stDataFrame"]');
-                        if (!dataframe) return 0;
-                        
-                        const rows = dataframe.querySelectorAll('div[role="row"]');
-                        let coloredCount = 0;
-                        
-                        rows.forEach((row, index) => {
-                            if (index === 0) return; // Skip header row
-                            
-                            const cells = row.querySelectorAll('div[role="gridcell"]');
-                            let hasUrgente = false;
-                            let hasNormale = false;
-                            
-                            cells.forEach(cell => {
-                                const text = cell.textContent || cell.innerText || '';
-                                if (text.trim() === 'Urgente') {
-                                    hasUrgente = true;
-                                } else if (text.trim() === 'Normale') {
-                                    hasNormale = true;
-                                }
-                            });
-                            
-                            if (hasUrgente) {
-                                row.style.backgroundColor = 'rgba(239, 68, 68, 0.15)';
-                                row.style.setProperty('background-color', 'rgba(239, 68, 68, 0.15)', 'important');
-                                cells.forEach(cell => {
-                                    cell.style.backgroundColor = 'rgba(239, 68, 68, 0.15)';
-                                    cell.style.setProperty('background-color', 'rgba(239, 68, 68, 0.15)', 'important');
-                                });
-                                coloredCount++;
-                            } else if (hasNormale) {
-                                row.style.backgroundColor = 'rgba(34, 197, 94, 0.15)';
-                                row.style.setProperty('background-color', 'rgba(34, 197, 94, 0.15)', 'important');
-                                cells.forEach(cell => {
-                                    cell.style.backgroundColor = 'rgba(34, 197, 94, 0.15)';
-                                    cell.style.setProperty('background-color', 'rgba(34, 197, 94, 0.15)', 'important');
-                                });
-                                coloredCount++;
-                            }
-                        });
-                        
-                        return coloredCount;
-                    }
-                    
-                    // Nettoyer l'interval précédent
-                    if (window.colorRowsInterval) {
-                        clearInterval(window.colorRowsInterval);
-                    }
-                    
-                    // Appliquer immédiatement
-                    setTimeout(applyRowColorsInline, 100);
-                    setTimeout(applyRowColorsInline, 300);
-                    setTimeout(applyRowColorsInline, 600);
-                    setTimeout(applyRowColorsInline, 1000);
-                    setTimeout(applyRowColorsInline, 2000);
-                    
-                    // Continuer à réappliquer toutes les 500ms pendant 10 secondes
-                    let attempts = 0;
-                    window.colorRowsInterval = setInterval(() => {
-                        const colored = applyRowColorsInline();
-                        attempts++;
-                        
-                        // Arrêter après 20 tentatives (10 secondes) ou si on a coloré au moins une ligne
-                        if (attempts > 20 || (colored > 0 && attempts > 5)) {
-                            clearInterval(window.colorRowsInterval);
-                        }
-                    }, 500);
-                })();
+                {js_code}
+                initDialogRowColors();
                 </script>
             """, unsafe_allow_html=True)
             
@@ -607,59 +539,14 @@ elif st.session_state.app_mode == "tasks":
             
             st.markdown("<br>", unsafe_allow_html=True)
             
-            # CSS et JavaScript pour les couleurs
-            st.markdown("""
-                <style>
-                .row-urgente {
-                    background-color: rgba(239, 68, 68, 0.15) !important;
-                }
-                
-                .row-normale {
-                    background-color: rgba(34, 197, 94, 0.15) !important;
-                }
-                
-                div[data-testid="stDataFrame"] input,
-                div[data-testid="stDataFrame"] textarea,
-                div[data-testid="stDataFrame"] select {
-                    background-color: white !important;
-                    color: #1f2937 !important;
-                    border: 1px solid #d1d5db !important;
-                }
-                </style>
+            # JavaScript pour les couleurs
+            js_path = os.path.join(os.path.dirname(__file__), 'row_colors.js')
+            with open(js_path) as f:
+                js_code = f.read()
+            st.markdown(f"""
                 <script>
-                function applyRowColorsPerson() {
-                    const rows = document.querySelectorAll('div[data-testid="stDataFrame"] tbody tr');
-                    rows.forEach(row => {
-                        const cells = row.querySelectorAll('td');
-                        let hasUrgente = false;
-                        let hasNormale = false;
-                        cells.forEach(cell => {
-                            const text = cell.textContent || cell.innerText || '';
-                            if (text.includes('Urgente')) hasUrgente = true;
-                            else if (text.includes('Normale')) hasNormale = true;
-                        });
-                        if (hasUrgente) {
-                            row.classList.add('row-urgente');
-                            row.classList.remove('row-normale');
-                        } else if (hasNormale) {
-                            row.classList.add('row-normale');
-                            row.classList.remove('row-urgente');
-                        }
-                    });
-                }
-                setTimeout(applyRowColorsPerson, 100);
-                setTimeout(applyRowColorsPerson, 300);
-                setTimeout(applyRowColorsPerson, 500);
-                setTimeout(applyRowColorsPerson, 1000);
-                const observerPerson = new MutationObserver(() => applyRowColorsPerson());
-                setTimeout(() => {
-                    observerPerson.observe(document.body, { 
-                        childList: true, 
-                        subtree: true,
-                        attributes: false,
-                        characterData: false
-                    });
-                }, 100);
+                {js_code}
+                initPersonRowColors();
                 </script>
             """, unsafe_allow_html=True)
             
