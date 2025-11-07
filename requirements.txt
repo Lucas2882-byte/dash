@@ -1,4 +1,0 @@
-pandas
-streamlit>=1.38.0
-streamlit-sortables
-requests
