@@ -1,0 +1,1638 @@
+/* Dark Theme Dashboard - Clean & Modern */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+* {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Main container - Smooth dark background */
+.stApp {
+    background: #1a1d29;
+    color: #E8E9ED;
+}
+
+.main {
+    background: transparent;
+    padding: 2rem;
+}
+
+/* Hide Streamlit branding */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+
+/* Card styling - Clean and subtle */
+.card {
+    background: #23262f;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Style elements inside card */
+.card .stButton > button {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 8px 12px;
+    font-size: 13px;
+}
+
+.card [data-testid="column"] {
+    padding: 0 3px !important;
+}
+
+.card [data-testid="column"]:first-child {
+    padding-left: 0 !important;
+}
+
+.card [data-testid="column"]:last-child {
+    padding-right: 0 !important;
+}
+
+.card .stSelectbox {
+    margin-bottom: 0;
+}
+
+.card .stSelectbox > div {
+    margin-bottom: 0;
+}
+
+/* Make card element extend to include buttons below */
+.card {
+    background: #23262f;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+/* Target the element container right after a card div */
+div[data-testid="element-container"]:has(> div > .card) + div[data-testid="element-container"] {
+    background: #23262f !important;
+    border-radius: 0 0 12px 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-top: none !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+    margin-bottom: 12px !important;
+    padding: 0 16px 16px 16px !important;
+    margin-top: 0 !important;
+}
+
+/* Hover effect on both parts */
+div[data-testid="element-container"]:has(> div > .card):hover .card,
+div[data-testid="element-container"]:has(> div > .card):hover + div[data-testid="element-container"] {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Remove default Streamlit spacing from button container */
+div[data-testid="element-container"]:has(> div > .card) + div[data-testid="element-container"] > div[data-testid="stVerticalBlock"] {
+    gap: 0 !important;
+    padding: 0 !important;
+}
+
+/* Style buttons to blend with card */
+div[data-testid="element-container"]:has(> div > .card) + div[data-testid="element-container"] .stButton > button {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+}
+
+/* Style columns */
+div[data-testid="element-container"]:has(> div > .card) + div[data-testid="element-container"] [data-testid="column"] {
+    padding: 0 3px !important;
+}
+
+div[data-testid="element-container"]:has(> div > .card) + div[data-testid="element-container"] [data-testid="column"]:first-child {
+    padding-left: 0 !important;
+}
+
+div[data-testid="element-container"]:has(> div > .card) + div[data-testid="element-container"] [data-testid="column"]:last-child {
+    padding-right: 0 !important;
+}
+
+/* Style selectbox */
+div[data-testid="element-container"]:has(> div > .card) + div[data-testid="element-container"] .stSelectbox {
+    margin-bottom: 0 !important;
+}
+
+div[data-testid="element-container"]:has(> div > .card) + div[data-testid="element-container"] .stSelectbox > div {
+    margin-bottom: 0 !important;
+}
+
+/* Remove spacing between columns */
+div[data-testid="element-container"]:has(> div > .card) + div[data-testid="element-container"] [data-testid="stHorizontalBlock"] {
+    gap: 8px !important;
+}
+
+/* Compact task actions bar */
+.task-actions-container {
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 10px 0 2px 0;
+    margin-top: 8px;
+}
+
+/* Reduce button height in action bar */
+div[data-testid="element-container"]:has(> div > .card) + div[data-testid="element-container"] .stButton > button {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+    height: 32px !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+    display: block !important;
+}
+
+/* Reduce selectbox height in action bar */
+div[data-testid="element-container"]:has(> div > .card) + div[data-testid="element-container"] .stSelectbox [data-baseweb="select"] {
+    min-height: 32px !important;
+    height: 32px !important;
+}
+
+div[data-testid="element-container"]:has(> div > .card) + div[data-testid="element-container"] .stSelectbox [data-baseweb="select"] > div {
+    min-height: 32px !important;
+    height: 32px !important;
+    padding: 4px 8px !important;
+    font-size: 12px !important;
+}
+
+/* Reduce selectbox margin */
+div[data-testid="element-container"]:has(> div > .card) + div[data-testid="element-container"] .stSelectbox {
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+}
+
+div[data-testid="element-container"]:has(> div > .card) + div[data-testid="element-container"] .stSelectbox > div {
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+}
+
+/* Align columns to center vertically */
+div[data-testid="element-container"]:has(> div > .card) + div[data-testid="element-container"] [data-testid="column"] {
+    display: flex;
+    align-items: center;
+    padding: 0 3px !important;
+}
+
+/* Style for task rows with edit button */
+div[data-testid="column"]:has(> div > div > .card) {
+    padding-right: 0 !important;
+}
+
+div[data-testid="column"]:has(> div > .stButton) + div[data-testid="column"] {
+    padding-left: 8px !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    padding-top: 20px !important;
+}
+
+/* Edit button styled as compact badge */
+div[data-testid="column"]:has(> div > .stButton) .stButton > button {
+    padding: 6px 12px !important;
+    font-size: 16px !important;
+    height: auto !important;
+    min-height: auto !important;
+    margin: 0 !important;
+    border-radius: 20px !important;
+    background: rgba(139, 92, 246, 0.15) !important;
+    color: #A78BFA !important;
+    border: 1px solid rgba(139, 92, 246, 0.3) !important;
+    font-weight: 500 !important;
+    box-shadow: none !important;
+    line-height: 1 !important;
+}
+
+div[data-testid="column"]:has(> div > .stButton) .stButton > button:hover {
+    background: rgba(139, 92, 246, 0.25) !important;
+    border-color: rgba(139, 92, 246, 0.5) !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* iOS Premium Metric Cards */
+.metric-card {
+    position: relative;
+    background: linear-gradient(145deg, 
+        rgba(255, 255, 255, 0.08) 0%, 
+        rgba(255, 255, 255, 0.02) 100%);
+    border-radius: 24px;
+    padding: 28px 24px;
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    height: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+        circle at 50% 0%,
+        rgba(167, 139, 250, 0.1) 0%,
+        transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.metric-card:hover::before {
+    opacity: 1;
+}
+
+.metric-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+        0 16px 48px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(167, 139, 250, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    border-color: rgba(167, 139, 250, 0.3);
+}
+
+.metric-card-urgent {
+    background: linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%);
+    color: white;
+    box-shadow: 
+        0 12px 40px rgba(167, 139, 250, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.metric-card-urgent::before {
+    background: radial-gradient(
+        circle at 50% 0%,
+        rgba(255, 255, 255, 0.15) 0%,
+        transparent 60%
+    );
+}
+
+.metric-card-urgent:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+        0 20px 60px rgba(167, 139, 250, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.metric-card-urgent .subtitle {
+    color: white;
+    opacity: 0.95;
+}
+
+/* Icons - Modern iOS Style */
+.icon-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.metric-card:hover .icon-circle {
+    transform: scale(1.1) rotateY(10deg);
+}
+
+.icon-urgent {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.15) 100%);
+    color: #FCA5A5;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.icon-add {
+    background: linear-gradient(135deg, rgba(52, 211, 153, 0.2) 0%, rgba(16, 185, 129, 0.15) 100%);
+    color: #6EE7B7;
+    box-shadow: 0 4px 12px rgba(52, 211, 153, 0.3);
+}
+
+.icon-person {
+    background: linear-gradient(135deg, rgba(96, 165, 250, 0.2) 0%, rgba(59, 130, 246, 0.15) 100%);
+    color: #93C5FD;
+    box-shadow: 0 4px 12px rgba(96, 165, 250, 0.3);
+}
+
+.icon-all {
+    background: linear-gradient(135deg, rgba(251, 146, 60, 0.2) 0%, rgba(249, 115, 22, 0.15) 100%);
+    color: #FDBA74;
+    box-shadow: 0 4px 12px rgba(251, 146, 60, 0.3);
+}
+
+/* Typography */
+h1 {
+    font-weight: 700;
+    font-size: 32px;
+    color: #F1F3F5;
+    margin-bottom: 8px;
+}
+
+h2 {
+    font-weight: 600;
+    font-size: 24px;
+    color: #E8E9ED;
+    margin-bottom: 16px;
+}
+
+h3 {
+    font-weight: 600;
+    font-size: 18px;
+    color: #E8E9ED;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #9CA3AF;
+    font-weight: 400;
+}
+
+/* Buttons - Soft gradient */
+.stButton > button {
+    background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.25);
+}
+
+.stButton > button:hover {
+    background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.35);
+    transform: translateY(-1px);
+}
+
+/* Premium Form - Form Labels - Premium iOS Style */
+div[data-testid="stForm"] label {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    color: #E8E9ED !important;
+    margin-bottom: 10px !important;
+    letter-spacing: -0.2px !important;
+}
+
+/* Premium Form - Text Input - Premium iOS Style */
+div[data-testid="stForm"] input[type="text"],
+div[data-testid="stForm"] input[type="email"],
+div[data-testid="stForm"] input[type="number"],
+div[data-testid="stForm"] textarea {
+    border-radius: 16px !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+    padding: 16px 18px !important;
+    background: rgba(35, 38, 47, 0.8) !important;
+    color: #E8E9ED !important;
+    font-size: 15px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.1),
+        inset 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+div[data-testid="stForm"] textarea {
+    min-height: 120px !important;
+    resize: vertical !important;
+    font-family: inherit !important;
+}
+
+div[data-testid="stForm"] input::placeholder,
+div[data-testid="stForm"] textarea::placeholder {
+    color: #6B7280 !important;
+    opacity: 1 !important;
+}
+
+div[data-testid="stForm"] input:focus,
+div[data-testid="stForm"] textarea:focus {
+    border-color: #8B5CF6 !important;
+    outline: none !important;
+    box-shadow: 
+        0 0 0 4px rgba(139, 92, 246, 0.12),
+        0 4px 12px rgba(139, 92, 246, 0.2),
+        inset 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+    background: rgba(35, 38, 47, 1) !important;
+}
+
+/* Premium Form - Selectbox - Disabled for basic style */
+/*
+div[data-testid="stForm"] [data-baseweb="select"] {
+    border-radius: 16px !important;
+    background: rgba(35, 38, 47, 0.8) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.1),
+        inset 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+div[data-testid="stForm"] [data-baseweb="select"]:hover {
+    border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+div[data-testid="stForm"] [data-baseweb="select"] > div {
+    padding: 14px 16px !important;
+    font-size: 15px !important;
+    color: white !important;
+    background: transparent !important;
+    min-height: auto !important;
+}
+
+div[data-testid="stForm"] [data-baseweb="select"] *,
+div[data-testid="stForm"] [data-baseweb="select"] div,
+div[data-testid="stForm"] [data-baseweb="select"] span,
+div[data-testid="stForm"] [data-baseweb="select"] div[role="combobox"],
+div[data-testid="stForm"] [data-baseweb="select"] div[role="combobox"] span,
+div[data-testid="stForm"] [data-baseweb="select"] div[role="combobox"] div,
+div[data-testid="stForm"] [data-baseweb="select"] [role="button"],
+.stSelectbox [data-baseweb="select"] *,
+.stSelectbox [data-baseweb="select"] div,
+.stSelectbox [data-baseweb="select"] span,
+.stSelectbox [data-baseweb="select"] div[role="combobox"],
+.stSelectbox [data-baseweb="select"] div[role="combobox"] span,
+.stSelectbox [data-baseweb="select"] div[role="combobox"] div {
+    color: white !important;
+}
+
+div[data-testid="stForm"] [data-baseweb="select"] svg {
+    fill: #9CA3AF !important;
+    color: #9CA3AF !important;
+}
+*/
+
+/* Selectbox Dropdown Menu - Disabled for basic style */
+/*
+[data-baseweb="popover"] {
+    background: rgba(35, 38, 47, 0.98) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    backdrop-filter: blur(20px) !important;
+}
+
+[data-baseweb="popover"] ul {
+    background: transparent !important;
+    padding: 8px !important;
+}
+
+[data-baseweb="popover"] li {
+    color: #E8E9ED !important;
+    padding: 12px 16px !important;
+    border-radius: 12px !important;
+    margin: 2px 0 !important;
+    transition: all 0.2s ease !important;
+}
+
+[data-baseweb="popover"] li:hover {
+    background: rgba(139, 92, 246, 0.15) !important;
+    color: #A78BFA !important;
+}
+
+[data-baseweb="popover"] li[aria-selected="true"] {
+    background: rgba(139, 92, 246, 0.25) !important;
+    color: #C4B5FD !important;
+}
+
+/* Date Input - Premium iOS Style */
+div[data-testid="stForm"] [data-baseweb="input"] {
+    border-radius: 16px !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+    background: rgba(35, 38, 47, 0.8) !important;
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.1),
+        inset 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+div[data-testid="stForm"] [data-baseweb="input"] input {
+    padding: 16px 18px !important;
+    font-size: 15px !important;
+    color: #E8E9ED !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+/* Premium Form - Checkbox - Premium iOS Style */
+div[data-testid="stForm"] .stCheckbox {
+    padding: 12px 0 !important;
+}
+
+div[data-testid="stForm"] .stCheckbox > label {
+    background: rgba(255, 255, 255, 0.03) !important;
+    padding: 14px 18px !important;
+    border-radius: 14px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+}
+
+div[data-testid="stForm"] .stCheckbox > label:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(139, 92, 246, 0.3) !important;
+}
+
+div[data-testid="stForm"] .stCheckbox input[type="checkbox"] {
+    width: 22px !important;
+    height: 22px !important;
+    border-radius: 7px !important;
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+    background: rgba(35, 38, 47, 0.8) !important;
+}
+
+div[data-testid="stForm"] .stCheckbox input[type="checkbox"]:checked {
+    background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%) !important;
+    border-color: #8B5CF6 !important;
+}
+
+/* Premium Form - Form Submit Button - Premium iOS Style */
+div[data-testid="stForm"] [data-testid="stFormSubmitButton"] button {
+    background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 16px !important;
+    padding: 18px 32px !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 
+        0 8px 24px rgba(139, 92, 246, 0.35),
+        0 2px 6px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    letter-spacing: 0.3px !important;
+    margin-top: 12px !important;
+}
+
+div[data-testid="stForm"] [data-testid="stFormSubmitButton"] button:hover {
+    background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%) !important;
+    box-shadow: 
+        0 12px 32px rgba(139, 92, 246, 0.45),
+        0 4px 8px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+    transform: translateY(-2px) !important;
+}
+
+div[data-testid="stForm"] [data-testid="stFormSubmitButton"] button:active {
+    transform: translateY(0px) !important;
+    box-shadow: 
+        0 4px 12px rgba(139, 92, 246, 0.3),
+        inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Input fields - Clean dark */
+.stTextInput > div > div > input,
+.stTextArea > div > div > textarea,
+.stSelectbox > div > div > select {
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px;
+    background: #2a2d39;
+    color: #E8E9ED;
+    transition: all 0.3s ease;
+}
+
+.stTextInput > div > div > input:focus,
+.stTextArea > div > div > textarea:focus,
+.stSelectbox > div > div > select:focus {
+    border-color: #8B5CF6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+    background: #23262f;
+}
+
+/* Tabs - Clean style */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px;
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stTabs [data-baseweb="tab"] {
+    height: 50px;
+    background: transparent;
+    border-radius: 8px 8px 0 0;
+    color: #9CA3AF;
+    font-weight: 600;
+    padding: 0 24px;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.stTabs [data-baseweb="tab"]:hover {
+    background: rgba(139, 92, 246, 0.05);
+    color: #C4B5FD;
+}
+
+.stTabs [aria-selected="true"] {
+    background: rgba(139, 92, 246, 0.1);
+    color: #A78BFA;
+    border-bottom: 2px solid #8B5CF6;
+}
+
+/* Expander */
+.streamlit-expanderHeader {
+    background: #23262f;
+    border-radius: 12px;
+    padding: 16px;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: #E8E9ED;
+}
+
+.streamlit-expanderHeader:hover {
+    background: #2a2d39;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Metrics */
+[data-testid="stMetricValue"] {
+    font-size: 28px;
+    font-weight: 700;
+    color: #F1F3F5;
+}
+
+[data-testid="stMetricLabel"] {
+    font-size: 13px;
+    font-weight: 500;
+    color: #9CA3AF;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* DataFrames */
+.dataframe {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: #23262f;
+}
+
+/* Status badges - Pastel colors */
+.status-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-a-faire,
+.status-todo {
+    background: rgba(251, 146, 60, 0.15);
+    color: #FDB878;
+}
+
+.status-en-cours,
+.status-progress {
+    background: rgba(96, 165, 250, 0.15);
+    color: #93C5FD;
+}
+
+.status-terminee,
+.status-done {
+    background: rgba(52, 211, 153, 0.15);
+    color: #6EE7B7;
+}
+
+.priority-normal {
+    background: rgba(156, 163, 175, 0.15);
+    color: #D1D5DB;
+}
+
+.priority-urgent {
+    background: rgba(239, 68, 68, 0.15);
+    color: #FCA5A5;
+}
+
+/* Divider */
+hr {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin: 24px 0;
+}
+
+/* Form containers */
+.stForm {
+    background: #23262f;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Select box */
+div[data-baseweb="select"] {
+    border-radius: 12px;
+    background: #2a2d39;
+}
+
+div[data-baseweb="select"] > div {
+    background: #2a2d39;
+    border-color: rgba(255, 255, 255, 0.08);
+    color: #E8E9ED;
+}
+
+/* Multi-select */
+.stMultiSelect [data-baseweb="tag"] {
+    background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+    color: white;
+    border: none;
+}
+
+/* Caption */
+.caption {
+    font-size: 13px;
+    color: #6B7280;
+    text-align: center;
+    margin-top: 32px;
+}
+
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background: #1f2229;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Success/Error/Info messages */
+.stSuccess {
+    background: rgba(52, 211, 153, 0.15);
+    border: 1px solid rgba(52, 211, 153, 0.3);
+    border-radius: 12px;
+    color: #6EE7B7;
+}
+
+.stError {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 12px;
+    color: #FCA5A5;
+}
+
+.stInfo {
+    background: rgba(96, 165, 250, 0.15);
+    border: 1px solid rgba(96, 165, 250, 0.3);
+    border-radius: 12px;
+    color: #93C5FD;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #23262f;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+}
+
+/* Dialog/Modal styling */
+[data-testid="stDialog"] {
+    background: #1f2229;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Compact multiselect in dialogs */
+[data-testid="stDialog"] .stMultiSelect {
+    margin-bottom: 8px !important;
+}
+
+[data-testid="stDialog"] .stMultiSelect > label {
+    font-size: 12px !important;
+    margin-bottom: 4px !important;
+    font-weight: 500 !important;
+}
+
+[data-testid="stDialog"] .stMultiSelect [data-baseweb="select"] {
+    min-height: 36px !important;
+}
+
+[data-testid="stDialog"] .stMultiSelect [data-baseweb="select"] > div {
+    min-height: 36px !important;
+    padding: 4px 8px !important;
+    font-size: 13px !important;
+}
+
+[data-testid="stDialog"] .stMultiSelect [data-baseweb="tag"] {
+    margin: 2px !important;
+    padding: 2px 8px !important;
+    font-size: 12px !important;
+}
+
+/* Classes pour coloration des lignes du tableau */
+.row-urgente {
+    background-color: rgba(239, 68, 68, 0.15) !important;
+}
+
+.row-normale {
+    background-color: rgba(34, 197, 94, 0.15) !important;
+}
+
+/* Assurer que les cellules éditables restent bien visibles */
+div[data-testid="stDataFrame"] input,
+div[data-testid="stDataFrame"] textarea,
+div[data-testid="stDataFrame"] select {
+    background-color: white !important;
+    color: #1f2937 !important;
+    border: 1px solid #d1d5db !important;
+}
+
+/* Ne pas interférer avec les cellules en mode édition */
+div[data-testid="stDataFrame"] div[data-baseweb="table"] {
+    background: transparent !important;
+}
+
+/* Colorer les lignes du data editor selon la priorité */
+[data-testid="stDataFrame"] tbody tr.row-urgente {
+    background-color: rgba(239, 68, 68, 0.15) !important;
+}
+
+[data-testid="stDataFrame"] tbody tr.row-normale {
+    background-color: rgba(34, 197, 94, 0.15) !important;
+}
+
+/* Smooth transitions */
+* {
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Compact task reorder styles */
+.task-reorder-item {
+    background: #23262f;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.task-reorder-item:hover {
+    background: #2a2d39;
+    border-color: rgba(139, 92, 246, 0.3);
+    transform: translateX(4px);
+}
+
+.task-reorder-number {
+    display: inline-block;
+    min-width: 32px;
+    font-weight: 700;
+    font-size: 14px;
+    color: #8B5CF6;
+    animation: numberPulse 0.4s ease;
+}
+
+@keyframes numberPulse {
+    0% {
+        transform: scale(1);
+        color: #8B5CF6;
+    }
+    50% {
+        transform: scale(1.3);
+        color: #A78BFA;
+    }
+    100% {
+        transform: scale(1);
+        color: #8B5CF6;
+    }
+}
+
+.task-reorder-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #E8E9ED;
+}
+
+.task-reorder-buttons {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+}
+
+.task-reorder-buttons button {
+    width: 28px !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    padding: 0 !important;
+    font-size: 16px !important;
+    background: rgba(139, 92, 246, 0.1) !important;
+    border: 1px solid rgba(139, 92, 246, 0.2) !important;
+    border-radius: 6px !important;
+    color: #A78BFA !important;
+    transition: all 0.2s ease !important;
+}
+
+.task-reorder-buttons button:hover {
+    background: rgba(139, 92, 246, 0.2) !important;
+    border-color: rgba(139, 92, 246, 0.4) !important;
+    transform: scale(1.1) !important;
+}
+
+.task-reorder-buttons button:active {
+    transform: scale(0.95) !important;
+}
+
+.task-moving-up {
+    animation: moveUp 0.3s ease-out;
+}
+
+.task-moving-down {
+    animation: moveDown 0.3s ease-out;
+}
+
+@keyframes moveUp {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+        background: rgba(139, 92, 246, 0.15);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+@keyframes moveDown {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(8px);
+        background: rgba(139, 92, 246, 0.15);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* iOS Premium Workflow Design */
+.ios-workflow-section {
+    margin-top: 24px;
+}
+
+.ios-workflow-card {
+    background: linear-gradient(135deg, rgba(44, 48, 58, 0.95) 0%, rgba(35, 38, 47, 0.95) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.15);
+}
+
+.ios-workflow-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.ios-workflow-header {
+    display: flex;
+    align-items: center;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.ios-workflow-label-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.ios-step-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.18) 0%, rgba(124, 58, 237, 0.12) 100%);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+div[data-testid="stVerticalBlock"]:has(> div > .ios-workflow-card-marker.completed) .ios-step-icon {
+    background: linear-gradient(135deg, rgba(52, 199, 89, 0.22) 0%, rgba(48, 209, 88, 0.16) 100%);
+    border-color: rgba(52, 199, 89, 0.35);
+    box-shadow: 0 2px 8px rgba(52, 199, 89, 0.2);
+}
+
+.ios-workflow-label {
+    font-size: 17px;
+    font-weight: 600;
+    color: #F5F5F7;
+    letter-spacing: -0.03em;
+    line-height: 1.3;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+}
+
+div[data-testid="stVerticalBlock"]:has(> div > .ios-workflow-card-marker.completed) .ios-workflow-label {
+    color: rgba(245, 245, 247, 0.65);
+}
+
+.ios-toggle-switch {
+    position: relative;
+    width: 51px;
+    height: 31px;
+    background: #39393D;
+    border-radius: 31px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
+}
+
+.ios-toggle-switch.active {
+    background: linear-gradient(135deg, #34C759 0%, #30D158 100%);
+    box-shadow: 0 2px 8px rgba(52, 199, 89, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+.ios-toggle-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 27px;
+    height: 27px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.ios-toggle-switch.active .ios-toggle-slider {
+    transform: translateX(20px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.ios-workflow-details {
+    margin-top: 14px !important;
+    padding-top: 14px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.ios-workflow-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ios-workflow-note {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #A1A1A6;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 11px;
+    border-left: 3px solid rgba(139, 92, 246, 0.5);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+}
+
+.ios-workflow-completed-date {
+    font-size: 14px;
+    color: #34C759;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+    letter-spacing: -0.01em;
+}
+
+.ios-workflow-actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+}
+
+.ios-workflow-btn {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ios-workflow-btn-primary {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(124, 58, 237, 0.15) 100%);
+    color: #A78BFA;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.ios-workflow-btn-primary:hover {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(124, 58, 237, 0.25) 100%);
+    border-color: rgba(139, 92, 246, 0.5);
+    transform: translateY(-1px);
+}
+
+.ios-progress-header {
+    margin-bottom: 20px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(124, 58, 237, 0.05) 100%);
+    border-radius: 16px;
+    border: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.ios-progress-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #A1A1A6;
+    margin-bottom: 12px;
+    letter-spacing: 0.3px;
+}
+
+.ios-progress-bar-container {
+    height: 6px;
+    background: rgba(58, 58, 60, 0.5);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.ios-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #8B5CF6 0%, #A78BFA 100%);
+    border-radius: 3px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+/* Styler le conteneur Streamlit comme une carte iOS premium */
+div[data-testid="stVerticalBlock"]:has(> div > .ios-workflow-card-marker) {
+    background: linear-gradient(135deg, rgba(44, 48, 58, 0.98) 0%, rgba(35, 38, 47, 0.95) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 18px !important;
+    padding: 20px 24px !important;
+    margin-bottom: 16px !important;
+    position: relative !important;
+    overflow: visible !important;
+    backdrop-filter: blur(30px) saturate(180%) !important;
+    box-shadow: 
+        0 1px 3px rgba(0, 0, 0, 0.12),
+        0 4px 16px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+div[data-testid="stVerticalBlock"]:has(> div > .ios-workflow-card-marker):hover {
+    transform: translateY(-2px) scale(1.005) !important;
+    box-shadow: 
+        0 2px 6px rgba(0, 0, 0, 0.15),
+        0 8px 24px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Effet de carte complétée */
+div[data-testid="stVerticalBlock"]:has(> div > .ios-workflow-card-marker.completed) {
+    background: linear-gradient(135deg, rgba(52, 199, 89, 0.12) 0%, rgba(48, 209, 88, 0.08) 100%) !important;
+    border-color: rgba(52, 199, 89, 0.2) !important;
+}
+
+/* Cacher le marqueur */
+.ios-workflow-card-marker {
+    display: none !important;
+}
+
+/* Réduire les marges internes du conteneur */
+div[data-testid="stVerticalBlock"]:has(> div > .ios-workflow-card-marker) > div[data-testid="element-container"] {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Style de la ligne de header (première stHorizontalBlock) */
+div[data-testid="stVerticalBlock"]:has(> div > .ios-workflow-card-marker) > div:nth-child(2) div[data-testid="stHorizontalBlock"] {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin: 0 !important;
+}
+
+/* Colonnes du header : ajuster les marges */
+div[data-testid="stVerticalBlock"]:has(> div > .ios-workflow-card-marker) > div:nth-child(2) div[data-testid="column"] {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Aligner le contenu à droite dans la colonne de droite */
+div[data-testid="stVerticalBlock"]:has(> div > .ios-workflow-card-marker) > div:nth-child(2) div[data-testid="column"]:last-child {
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+}
+
+div[data-testid="stVerticalBlock"]:has(> div > .ios-workflow-card-marker) div[data-testid="stSwitch"] {
+    margin: 0 !important;
+}
+
+div[data-testid="stVerticalBlock"]:has(> div > .ios-workflow-card-marker) div[data-testid="stHorizontalBlock"] button {
+    margin: 0 !important;
+    padding: 6px 12px !important;
+}
+
+/* Style du toggle iOS - Premium Design */
+div[data-testid="stVerticalBlock"]:has(> div > .ios-workflow-card-marker) div[data-testid="stSwitch"] button {
+    width: 60px !important;
+    height: 36px !important;
+    border-radius: 18px !important;
+    padding: 3px !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border: none !important;
+    background: linear-gradient(180deg, #2C2C2E 0%, #1C1C1E 100%) !important;
+    position: relative !important;
+    cursor: pointer !important;
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.4),
+        inset 0 -1px 1px rgba(255, 255, 255, 0.05),
+        0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* État inactif (gris) - Hover effect */
+div[data-testid="stVerticalBlock"]:has(> div > .ios-workflow-card-marker) div[data-testid="stSwitch"] button[aria-checked="false"]:hover {
+    background: linear-gradient(180deg, #343437 0%, #25252A 100%) !important;
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.5),
+        inset 0 -1px 1px rgba(255, 255, 255, 0.08),
+        0 2px 4px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* État actif (vert premium) */
+div[data-testid="stVerticalBlock"]:has(> div > .ios-workflow-card-marker) div[data-testid="stSwitch"] button[aria-checked="true"] {
+    background: linear-gradient(135deg, #34C759 0%, #30D158 50%, #28CD4F 100%) !important;
+    box-shadow: 
+        0 0 0 1px rgba(52, 199, 89, 0.2),
+        0 0 20px rgba(52, 199, 89, 0.3),
+        0 4px 12px rgba(52, 199, 89, 0.25),
+        inset 0 1px 2px rgba(255, 255, 255, 0.3),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(52, 199, 89, 0.5) !important;
+}
+
+/* État actif - Hover effect */
+div[data-testid="stVerticalBlock"]:has(> div > .ios-workflow-card-marker) div[data-testid="stSwitch"] button[aria-checked="true"]:hover {
+    background: linear-gradient(135deg, #3DD764 0%, #38DB5E 50%, #30D158 100%) !important;
+    box-shadow: 
+        0 0 0 1px rgba(52, 199, 89, 0.3),
+        0 0 24px rgba(52, 199, 89, 0.4),
+        0 6px 16px rgba(52, 199, 89, 0.3),
+        inset 0 1px 2px rgba(255, 255, 255, 0.4),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Style du slider/knob - Enhanced */
+div[data-testid="stVerticalBlock"]:has(> div > .ios-workflow-card-marker) div[data-testid="stSwitch"] button > div {
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F8F8F8 100%) !important;
+    box-shadow: 
+        0 3px 8px rgba(0, 0, 0, 0.2),
+        0 1px 1px rgba(0, 0, 0, 0.18),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: absolute !important;
+    top: 3px !important;
+    left: 3px !important;
+    border: 0.5px solid rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Slider hover effect */
+div[data-testid="stVerticalBlock"]:has(> div > .ios-workflow-card-marker) div[data-testid="stSwitch"] button:hover > div {
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.25),
+        0 2px 4px rgba(0, 0, 0, 0.2),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Déplacer le slider quand actif */
+div[data-testid="stVerticalBlock"]:has(> div > .ios-workflow-card-marker) div[data-testid="stSwitch"] button[aria-checked="true"] > div {
+    transform: translateX(24px) !important;
+    box-shadow: 
+        0 4px 10px rgba(0, 0, 0, 0.25),
+        0 2px 4px rgba(0, 0, 0, 0.2),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.05),
+        0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Compact note editing */
+.ios-note-editor {
+    margin-top: 12px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ios-note-editor textarea {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    color: #F5F5F7 !important;
+    font-size: 14px !important;
+    padding: 10px !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif !important;
+}
+
+.ios-note-editor textarea:focus {
+    border-color: rgba(139, 92, 246, 0.5) !important;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15) !important;
+}
+
+/* Premium iOS Dialog styling */
+[data-testid="stDialog"] {
+    background: linear-gradient(135deg, #1f2229 0%, #1a1d29 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Cacher le titre par défaut du dialogue Streamlit */
+[data-testid="stDialogTitle"] {
+    display: none !important;
+}
+
+/* Cacher le bouton de fermeture natif de Streamlit */
+[data-testid="stDialog"] button[aria-label="Close"] {
+    display: none !important;
+}
+
+[data-testid="stDialog"] h2 {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif !important;
+}
+
+/* Bouton de fermeture personnalisé dans le header */
+[data-testid="stDialog"] > div > div > div:first-child div[data-testid="stHorizontalBlock"]:first-of-type button {
+    width: 32px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    padding: 0 !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #F5F5F7 !important;
+    font-size: 18px !important;
+    font-weight: 400 !important;
+    transition: all 0.2s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+[data-testid="stDialog"] > div > div > div:first-child div[data-testid="stHorizontalBlock"]:first-of-type button:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    transform: scale(1.05) !important;
+}
+
+/* iOS Dialog Header Premium - Conteneur */
+[data-testid="stDialog"] > div > div > div:first-child div[data-testid="stHorizontalBlock"]:first-of-type {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(124, 58, 237, 0.04) 100%) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 20px 20px 0 0 !important;
+    padding: 24px 28px !important;
+    margin: -24px -24px 24px -24px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+/* Colonnes du header */
+[data-testid="stDialog"] > div > div > div:first-child div[data-testid="stHorizontalBlock"]:first-of-type div[data-testid="column"] {
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+/* Contenu du header */
+.ios-dialog-header-content {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.ios-service-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(124, 58, 237, 0.15) 100%);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+}
+
+.ios-service-info {
+    flex: 1;
+}
+
+.ios-service-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #F5F5F7;
+    margin: 0 0 6px 0;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+}
+
+.ios-service-subtitle {
+    font-size: 15px;
+    color: #A1A1A6;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: -0.01em;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+}
+
+/* iOS style buttons in workflow */
+[data-testid="stDialog"] .stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+    padding: 12px 24px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3) !important;
+}
+
+[data-testid="stDialog"] .stButton > button[kind="primary"]:hover {
+    background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4) !important;
+}
+
+[data-testid="stDialog"] .stButton > button:not([kind="primary"]) {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 10px !important;
+    color: #E8E9ED !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+}
+
+[data-testid="stDialog"] .stButton > button:not([kind="primary"]):hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Premium progress bar in dialog */
+[data-testid="stDialog"] [data-testid="stProgress"] {
+    display: none !important;
+}
+
+/* Smooth scrolling in dialog */
+[data-testid="stDialog"] [data-testid="stVerticalBlock"] {
+    scroll-behavior: smooth;
+}
+
+/* Adjust spacing after toggle and button row */
+.ios-workflow-header + div[data-testid="stHorizontalBlock"] + div {
+    margin-top: 8px !important;
+}
+
+/* Premium iOS Checkbox Styling for GMB Workflow */
+[data-testid="stDialog"] [data-testid="stCheckbox"] {
+    margin: 8px 0 !important;
+}
+
+[data-testid="stDialog"] [data-testid="stCheckbox"] label {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 12px 16px !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 12px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    cursor: pointer !important;
+}
+
+[data-testid="stDialog"] [data-testid="stCheckbox"] label:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    transform: translateX(2px) !important;
+}
+
+/* Checkbox personnalisée style iOS */
+[data-testid="stDialog"] [data-testid="stCheckbox"] input[type="checkbox"] {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    width: 24px !important;
+    height: 24px !important;
+    border: 2px solid #8B5CF6 !important;
+    border-radius: 50% !important;
+    background: transparent !important;
+    cursor: pointer !important;
+    position: relative !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    flex-shrink: 0 !important;
+}
+
+[data-testid="stDialog"] [data-testid="stCheckbox"] input[type="checkbox"]:checked {
+    background: linear-gradient(135deg, #34C759 0%, #30D158 100%) !important;
+    border-color: #34C759 !important;
+    box-shadow: 0 0 12px rgba(52, 199, 89, 0.4) !important;
+}
+
+[data-testid="stDialog"] [data-testid="stCheckbox"] input[type="checkbox"]:checked::after {
+    content: "✓" !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    color: white !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+}
+
+/* Texte du checkbox */
+[data-testid="stDialog"] [data-testid="stCheckbox"] label span {
+    color: #F5F5F7 !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    letter-spacing: -0.01em !important;
+}
+
+/* Checkbox complété - style différent */
+[data-testid="stDialog"] [data-testid="stCheckbox"] input[type="checkbox"]:checked + div span {
+    color: rgba(245, 245, 247, 0.6) !important;
+    text-decoration: line-through !important;
+}
+
+/* Note button style iOS */
+[data-testid="stDialog"] .stButton > button[key*="note_"] {
+    background: rgba(139, 92, 246, 0.1) !important;
+    border: 1px solid rgba(139, 92, 246, 0.25) !important;
+    border-radius: 10px !important;
+    padding: 8px 12px !important;
+    color: #A78BFA !important;
+    font-size: 18px !important;
+    transition: all 0.2s ease !important;
+    min-height: auto !important;
+    height: auto !important;
+}
+
+[data-testid="stDialog"] .stButton > button[key*="note_"]:hover {
+    background: rgba(139, 92, 246, 0.2) !important;
+    border-color: rgba(139, 92, 246, 0.4) !important;
+    transform: scale(1.05) !important;
+}
