@@ -3,7 +3,6 @@ import database as db
 import pandas as pd
 from datetime import datetime
 import html
-from streamlit_sortables import sort_items
 
 st.set_page_config(
     page_title="Dashboard Équipe",
@@ -858,16 +857,6 @@ elif st.session_state.app_mode == "tasks":
             
             st.markdown("<br>", unsafe_allow_html=True)
             
-            # Choix de vue
-            view_mode = st.radio(
-                "Mode d'affichage",
-                ["📋 Tableau", "🔀 Réorganiser"],
-                horizontal=True,
-                key="view_mode_person"
-            )
-            
-            st.markdown("<br>", unsafe_allow_html=True)
-            
             # JavaScript pour les couleurs
             st.markdown(f"""
                 <script>
@@ -879,253 +868,162 @@ elif st.session_state.app_mode == "tasks":
             if filtered_person_tasks.empty:
                 st.info("Aucune tâche ne correspond aux filtres sélectionnés")
             else:
-                if has_active_filters and view_mode == "🔀 Réorganiser":
+                if has_active_filters:
                     st.warning("⚠️ La réorganisation des tâches n'est pas disponible lorsque des filtres sont actifs. Affichez toutes les tâches pour pouvoir réorganiser.")
                 
                 # Ajouter les numéros de tâche par personne
                 filtered_person_tasks = add_person_task_numbers(filtered_person_tasks)
                 
-                if view_mode == "🔀 Réorganiser" and not has_active_filters:
-                    st.info("💡 Glissez et déposez les tâches pour les réorganiser")
-                    
-                    # Préparer la liste des tâches pour le drag & drop
-                    sorted_tasks = filtered_person_tasks.sort_values('person_task_number')
-                    
-                    # Créer une liste d'items avec numéros uniques pour garantir l'unicité
-                    task_items = []
-                    task_order_to_id = []
-                    
-                    for idx, task in sorted_tasks.iterrows():
-                        priority_icon = "🔴" if task['priority'] == "Urgente" else "🟢"
-                        status_icon = "✅" if task['status'] == "Terminée" else "⏳" if task['status'] == "En cours" else "📋"
-                        client_text = f" - {task['client_name']}" if task.get('client_name') else ""
-                        
-                        task_id = int(task['_original_id'])
-                        
-                        # Utiliser un numéro unique pour garantir l'unicité des items
-                        item_label = f"#{len(task_items) + 1} {priority_icon} {status_icon} {task['title']}{client_text}"
-                        task_items.append(item_label)
-                        task_order_to_id.append(task_id)
-                    
-                    # Afficher le composant de drag & drop
-                    st.markdown("""
-                        <style>
-                        /* Styles pour les items drag & drop */
-                        .sortable-item {
-                            background: rgba(255, 255, 255, 0.05);
-                            border: 1px solid rgba(255, 255, 255, 0.1);
-                            border-radius: 8px;
-                            padding: 12px 16px;
-                            margin: 8px 0;
-                            cursor: grab;
-                            transition: all 0.2s ease;
-                        }
-                        .sortable-item:hover {
-                            background: rgba(255, 255, 255, 0.08);
-                            border-color: rgba(255, 255, 255, 0.2);
-                            transform: translateY(-2px);
-                        }
-                        .sortable-item:active {
-                            cursor: grabbing;
-                        }
-                        </style>
-                    """, unsafe_allow_html=True)
-                    
-                    # Utiliser streamlit-sortables pour le drag & drop
-                    sorted_items = sort_items(
-                        task_items,
-                        multi_containers=False,
-                        direction='vertical',
-                        key='task_reorder_sortable'
-                    )
-                    
-                    # Reconstruire le mapping en utilisant l'index des items réorganisés
-                    # On retrouve l'ID original en se basant sur la position dans la liste originale
-                    reorder_map = {}
-                    for new_position, sorted_item in enumerate(sorted_items):
-                        # Trouver la position originale de cet item
-                        try:
-                            original_position = task_items.index(sorted_item)
-                            original_task_id = task_order_to_id[original_position]
-                            reorder_map[original_task_id] = new_position + 1
-                        except (ValueError, IndexError):
-                            pass
-                    
-                    # Stocker l'ordre dans session_state
-                    st.session_state.reorder_tasks_map = reorder_map
-                    st.session_state.reorder_person = selected_person
-                    
-                    # Bouton pour enregistrer l'ordre
-                    st.markdown("<br>", unsafe_allow_html=True)
-                    col1, col2 = st.columns([1, 1])
-                    with col1:
-                        if st.button("💾 Enregistrer l'ordre", use_container_width=True, type="primary"):
-                            if 'reorder_tasks_map' in st.session_state:
-                                db.reorder_tasks(selected_person, st.session_state.reorder_tasks_map)
-                                st.success("✅ Ordre des tâches enregistré avec succès !")
-                                if 'reorder_tasks_map' in st.session_state:
-                                    del st.session_state.reorder_tasks_map
-                                if 'reorder_person' in st.session_state:
-                                    del st.session_state.reorder_person
-                                st.rerun()
-                    
-                    with col2:
-                        if st.button("🔄 Réinitialiser", use_container_width=True):
-                            if 'reorder_tasks_map' in st.session_state:
-                                del st.session_state.reorder_tasks_map
-                            if 'reorder_person' in st.session_state:
-                                del st.session_state.reorder_person
-                            st.rerun()
+                # Préparer le dataframe pour l'affichage
+                original_df = filtered_person_tasks.copy()
+                display_df = filtered_person_tasks.copy()
                 
-                else:
-                    # Mode Tableau
-                    # Préparer le dataframe pour l'affichage
-                    original_df = filtered_person_tasks.copy()
-                    display_df = filtered_person_tasks.copy()
-                    
-                    # Ajouter la colonne Ordre seulement si aucun filtre n'est actif
-                    if not has_active_filters:
-                        display_df['Ordre'] = display_df['person_task_number']
-                    
-                    display_df = display_df.rename(columns={
-                        'id': 'ID',
-                        'title': 'Titre',
-                        'client_name': 'Client',
-                        'description': 'Description',
-                        'assigned_to': 'Assigné à',
-                        'priority': 'Priorité',
-                        'status': 'Statut',
-                        'created_at': 'Créée le',
-                        'updated_at': 'Modifiée le',
-                        'last_modified_by': 'Modifié par'
-                    })
-                    
-                    # Ajouter les badges de couleur dans la colonne Priorité
-                    if 'Priorité' in display_df.columns:
-                        display_df['Priorité'] = display_df['Priorité'].apply(
-                            lambda x: f"🔴 {x}" if x == "Urgente" else f"🟢 {x}" if x == "Normale" else x
-                        )
-                    
-                    column_order = [col for col in selected_columns if col in display_df.columns]
-                    display_df = display_df[column_order]
-                    display_df = display_df.fillna('')
-                    
-                    # Configuration des colonnes éditables
-                    column_config = {}
-                    if 'Ordre' in selected_columns:
-                        column_config["Ordre"] = st.column_config.NumberColumn("Ordre", width="small", help="Modifiez pour réorganiser les tâches", required=True, min_value=1)
-                    if 'ID' in selected_columns:
-                        column_config["ID"] = st.column_config.NumberColumn("ID", width="small", disabled=True)
-                    if 'Titre' in selected_columns:
-                        column_config["Titre"] = st.column_config.TextColumn("Titre", width="medium", required=True)
-                    if 'Client' in selected_columns:
-                        column_config["Client"] = st.column_config.TextColumn("Client", width="medium")
-                    if 'Description' in selected_columns:
-                        column_config["Description"] = st.column_config.TextColumn("Description", width="large")
-                    if 'Priorité' in selected_columns:
-                        column_config["Priorité"] = st.column_config.SelectboxColumn("Priorité", width="small", options=["🟢 Normale", "🔴 Urgente"], required=True)
-                    if 'Statut' in selected_columns:
-                        column_config["Statut"] = st.column_config.SelectboxColumn("Statut", width="small", options=["À faire", "En cours", "Terminée"], required=True)
-                    if 'Créée le' in selected_columns:
-                        column_config["Créée le"] = st.column_config.TextColumn("Créée le", width="medium", disabled=True)
-                    if 'Modifiée le' in selected_columns:
-                        column_config["Modifiée le"] = st.column_config.TextColumn("Modifiée le", width="medium", disabled=True)
-                    if 'Modifié par' in selected_columns:
-                        column_config["Modifié par"] = st.column_config.TextColumn("Modifié par", width="small", disabled=True)
-                    if 'Assigné à' in selected_columns:
-                        column_config["Assigné à"] = st.column_config.SelectboxColumn("Assigné à", width="small", options=team_members, required=True)
-                    
-                    # Afficher le tableau éditable
-                    edited_df = st.data_editor(
-                        display_df,
-                        height=600,
-                        use_container_width=True,
-                        hide_index=True,
-                        column_config=column_config,
-                        key="tasks_person_editor"
+                # Ajouter la colonne Ordre seulement si aucun filtre n'est actif
+                if not has_active_filters:
+                    display_df['Ordre'] = display_df['person_task_number']
+                
+                display_df = display_df.rename(columns={
+                    'id': 'ID',
+                    'title': 'Titre',
+                    'client_name': 'Client',
+                    'description': 'Description',
+                    'assigned_to': 'Assigné à',
+                    'priority': 'Priorité',
+                    'status': 'Statut',
+                    'created_at': 'Créée le',
+                    'updated_at': 'Modifiée le',
+                    'last_modified_by': 'Modifié par'
+                })
+                
+                # Ajouter les badges de couleur dans la colonne Priorité
+                if 'Priorité' in display_df.columns:
+                    display_df['Priorité'] = display_df['Priorité'].apply(
+                        lambda x: f"🔴 {x}" if x == "Urgente" else f"🟢 {x}" if x == "Normale" else x
                     )
-                    
-                    st.markdown("---")
-                    st.markdown(f"**Total:** {len(display_df)} tâche(s)")
+                
+                column_order = [col for col in selected_columns if col in display_df.columns]
+                display_df = display_df[column_order]
+                display_df = display_df.fillna('')
+                
+                # Configuration des colonnes éditables
+                column_config = {}
+                if 'Ordre' in selected_columns:
+                    column_config["Ordre"] = st.column_config.NumberColumn("Ordre", width="small", help="Modifiez le numéro pour changer la position de la tâche", required=True, min_value=1)
+                if 'ID' in selected_columns:
+                    column_config["ID"] = st.column_config.NumberColumn("ID", width="small", disabled=True)
+                if 'Titre' in selected_columns:
+                    column_config["Titre"] = st.column_config.TextColumn("Titre", width="medium", required=True)
+                if 'Client' in selected_columns:
+                    column_config["Client"] = st.column_config.TextColumn("Client", width="medium")
+                if 'Description' in selected_columns:
+                    column_config["Description"] = st.column_config.TextColumn("Description", width="large")
+                if 'Priorité' in selected_columns:
+                    column_config["Priorité"] = st.column_config.SelectboxColumn("Priorité", width="small", options=["🟢 Normale", "🔴 Urgente"], required=True)
+                if 'Statut' in selected_columns:
+                    column_config["Statut"] = st.column_config.SelectboxColumn("Statut", width="small", options=["À faire", "En cours", "Terminée"], required=True)
+                if 'Créée le' in selected_columns:
+                    column_config["Créée le"] = st.column_config.TextColumn("Créée le", width="medium", disabled=True)
+                if 'Modifiée le' in selected_columns:
+                    column_config["Modifiée le"] = st.column_config.TextColumn("Modifiée le", width="medium", disabled=True)
+                if 'Modifié par' in selected_columns:
+                    column_config["Modifié par"] = st.column_config.TextColumn("Modifié par", width="small", disabled=True)
+                if 'Assigné à' in selected_columns:
+                    column_config["Assigné à"] = st.column_config.SelectboxColumn("Assigné à", width="small", options=team_members, required=True)
+                
+                # Afficher le tableau éditable
+                edited_df = st.data_editor(
+                    display_df,
+                    height=600,
+                    use_container_width=True,
+                    hide_index=True,
+                    column_config=column_config,
+                    key="tasks_person_editor"
+                )
+                
+                st.markdown("---")
+                st.markdown(f"**Total:** {len(display_df)} tâche(s)")
+                if not has_active_filters:
+                    st.markdown("**💡 Modifiez le numéro dans la colonne 'Ordre' pour réorganiser les tâches**")
+                else:
                     st.markdown("**💡 Double-cliquez sur une cellule pour la modifier**")
+                
+                # Bouton pour enregistrer les modifications
+                if st.button("💾 Enregistrer les modifications", use_container_width=True, type="primary"):
+                    changes_made = False
+                    errors = []
                     
-                    # Bouton pour enregistrer les modifications
-                    if st.button("💾 Enregistrer les modifications", use_container_width=True, type="primary"):
-                        changes_made = False
-                        errors = []
-                        
-                        # Première passe: réorganiser complètement l'ordre des tâches basé sur les valeurs "Ordre" saisies
-                        if 'Ordre' in edited_df.columns and not original_df.empty:
-                            # Créer un DataFrame temporaire avec l'ordre saisi et les IDs originaux
-                            reorder_data = []
-                            for idx in range(len(edited_df)):
-                                original_task = original_df.iloc[idx] if idx < len(original_df) else None
-                                if original_task is not None and '_original_id' in original_task:
-                                    task_id = int(original_task['_original_id'])
-                                    order_value = int(edited_df.iloc[idx]['Ordre'])
-                                    reorder_data.append({'task_id': task_id, 'new_order': order_value})
-                            
-                            if reorder_data:
-                                # Trier par new_order pour obtenir l'ordre final
-                                reorder_df = pd.DataFrame(reorder_data)
-                                reorder_df = reorder_df.sort_values('new_order')
-                                
-                                # Réassigner des valeurs contiguës (1, 2, 3, etc.)
-                                new_order_map = {}
-                                for idx, row in enumerate(reorder_df.itertuples()):
-                                    new_order_map[row.task_id] = idx + 1
-                                
-                                # Appliquer le réordonnancement
-                                db.reorder_tasks(selected_person, new_order_map)
-                                changes_made = True
-                        
-                        # Deuxième passe: traiter les autres modifications
+                    # Première passe: réorganiser complètement l'ordre des tâches basé sur les valeurs "Ordre" saisies
+                    if 'Ordre' in edited_df.columns and not original_df.empty:
+                        # Créer un DataFrame temporaire avec l'ordre saisi et les IDs originaux
+                        reorder_data = []
                         for idx in range(len(edited_df)):
                             original_task = original_df.iloc[idx] if idx < len(original_df) else None
-                            task_id = int(original_task['_original_id']) if original_task is not None and '_original_id' in original_task else None
-                            
-                            if task_id is None:
-                                continue
-                            
-                            original_row = display_df.iloc[idx] if idx < len(display_df) else None
-                            edited_row = edited_df.iloc[idx]
-                            
-                            if original_row is not None:
-                                # Vérifier les changements (sauf Ordre qui est déjà géré)
-                                needs_update = False
-                                title = edited_row.get('Titre', '')
-                                client = edited_row.get('Client', '')
-                                description = edited_row.get('Description', '')
-                                priority_raw = edited_row.get('Priorité', 'Normale')
-                                priority = priority_raw.replace('🔴 ', '').replace('🟢 ', '')
-                                status = edited_row.get('Statut', 'À faire')
-                                assigned_to = edited_row.get('Assigné à', selected_person)
-                                
-                                # Comparer avec les valeurs originales (en ignorant Ordre)
-                                if (title != original_row.get('Titre', '') or
-                                    client != original_row.get('Client', '') or
-                                    description != original_row.get('Description', '') or
-                                    priority != original_row.get('Priorité', '').replace('🔴 ', '').replace('🟢 ', '') or
-                                    status != original_row.get('Statut', '') or
-                                    assigned_to != original_row.get('Assigné à', '')):
-                                    needs_update = True
-                                
-                                if needs_update:
-                                    if not title or not assigned_to:
-                                        errors.append(f"Ligne {idx + 1}: Titre et Assigné à sont obligatoires")
-                                        continue
-                                    
-                                    db.update_task(task_id, title, description, client, assigned_to, priority, status, st.session_state.current_user)
-                                    changes_made = True
+                            if original_task is not None and '_original_id' in original_task:
+                                task_id = int(original_task['_original_id'])
+                                order_value = int(edited_df.iloc[idx]['Ordre'])
+                                reorder_data.append({'task_id': task_id, 'new_order': order_value})
                         
-                        if errors:
-                            for error in errors:
-                                st.error(error)
-                        elif changes_made:
-                            st.success("✅ Modifications enregistrées avec succès !")
-                            st.rerun()
-                        else:
-                            st.info("Aucune modification détectée")
+                        if reorder_data:
+                            # Trier par new_order pour obtenir l'ordre final
+                            reorder_df = pd.DataFrame(reorder_data)
+                            reorder_df = reorder_df.sort_values('new_order')
+                            
+                            # Réassigner des valeurs contiguës (1, 2, 3, etc.)
+                            new_order_map = {}
+                            for idx, row in enumerate(reorder_df.itertuples()):
+                                new_order_map[row.task_id] = idx + 1
+                            
+                            # Appliquer le réordonnancement
+                            db.reorder_tasks(selected_person, new_order_map)
+                            changes_made = True
+                    
+                    # Deuxième passe: traiter les autres modifications
+                    for idx in range(len(edited_df)):
+                        original_task = original_df.iloc[idx] if idx < len(original_df) else None
+                        task_id = int(original_task['_original_id']) if original_task is not None and '_original_id' in original_task else None
+                        
+                        if task_id is None:
+                            continue
+                        
+                        original_row = display_df.iloc[idx] if idx < len(display_df) else None
+                        edited_row = edited_df.iloc[idx]
+                        
+                        if original_row is not None:
+                            # Vérifier les changements (sauf Ordre qui est déjà géré)
+                            needs_update = False
+                            title = edited_row.get('Titre', '')
+                            client = edited_row.get('Client', '')
+                            description = edited_row.get('Description', '')
+                            priority_raw = edited_row.get('Priorité', 'Normale')
+                            priority = priority_raw.replace('🔴 ', '').replace('🟢 ', '')
+                            status = edited_row.get('Statut', 'À faire')
+                            assigned_to = edited_row.get('Assigné à', selected_person)
+                            
+                            # Comparer avec les valeurs originales (en ignorant Ordre)
+                            if (title != original_row.get('Titre', '') or
+                                client != original_row.get('Client', '') or
+                                description != original_row.get('Description', '') or
+                                priority != original_row.get('Priorité', '').replace('🔴 ', '').replace('🟢 ', '') or
+                                status != original_row.get('Statut', '') or
+                                assigned_to != original_row.get('Assigné à', '')):
+                                needs_update = True
+                            
+                            if needs_update:
+                                if not title or not assigned_to:
+                                    errors.append(f"Ligne {idx + 1}: Titre et Assigné à sont obligatoires")
+                                    continue
+                                
+                                db.update_task(task_id, title, description, client, assigned_to, priority, status, st.session_state.current_user)
+                                changes_made = True
+                    
+                    if errors:
+                        for error in errors:
+                            st.error(error)
+                    elif changes_made:
+                        st.success("✅ Modifications enregistrées avec succès !")
+                        st.rerun()
+                    else:
+                        st.info("Aucune modification détectée")
     
     with tab4:
         st.markdown("### 📊 Vue d'Ensemble")
