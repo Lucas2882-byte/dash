@@ -40,6 +40,8 @@ if 'edit_task_id' not in st.session_state:
     st.session_state.edit_task_id = None
 if 'current_user' not in st.session_state:
     st.session_state.current_user = "Franck"
+if 'user_logged_in' not in st.session_state:
+    st.session_state.user_logged_in = False
 if 'app_mode' not in st.session_state:
     st.session_state.app_mode = None
 if 'show_table_person' not in st.session_state:
@@ -839,9 +841,41 @@ def show_service_workflow_dialog(service_id):
         st.session_state.show_workflow_service_id = None
         st.rerun()
 
-if st.session_state.app_mode is None:
+if not st.session_state.user_logged_in:
     st.markdown("""
-        <div style="text-align: center; margin-top: 60px; margin-bottom: 60px;">
+        <div style="text-align: center; margin-top: 120px; margin-bottom: 60px;">
+            <h1 style="
+                font-size: 56px; 
+                margin-bottom: 20px; 
+                background: linear-gradient(135deg, #A78BFA 0%, #EC4899 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                font-weight: 800;
+            ">Connexion 👤</h1>
+            <p class="subtitle" style="font-size: 22px; opacity: 0.8;">Qui êtes-vous ?</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        st.markdown("<div style='margin-bottom: 30px;'>", unsafe_allow_html=True)
+        selected_user = st.selectbox(
+            "Sélectionnez votre nom", 
+            team_members, 
+            key="temp_user",
+            label_visibility="collapsed"
+        )
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        if st.button("✨ Continuer", use_container_width=True, type="primary"):
+            st.session_state.current_user = selected_user
+            st.session_state.user_logged_in = True
+            st.rerun()
+
+elif st.session_state.app_mode is None:
+    st.markdown("""
+        <div style="text-align: center; margin-top: 60px; margin-bottom: 40px;">
             <h1 style="
                 font-size: 52px; 
                 margin-bottom: 16px; 
@@ -1107,9 +1141,12 @@ elif st.session_state.app_mode == "tasks":
         """, unsafe_allow_html=True)
     
     with col2:
-        st.markdown("<div style='margin-top: 8px;'>", unsafe_allow_html=True)
-        st.selectbox("👤 Vous êtes", team_members, key="current_user", label_visibility="visible")
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown(f"""
+            <div style='margin-top: 8px; text-align: center; padding: 12px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; border: 1px solid rgba(167, 139, 250, 0.3);'>
+                <p style='margin: 0; font-size: 14px; opacity: 0.7;'>Connecté en tant que</p>
+                <p style='margin: 0; font-size: 16px; font-weight: 600; color: {team_colors[st.session_state.current_user]};'>👤 {st.session_state.current_user}</p>
+            </div>
+        """, unsafe_allow_html=True)
     
     with col3:
         st.markdown("<div style='margin-top: 8px;'>", unsafe_allow_html=True)
@@ -1823,9 +1860,12 @@ elif st.session_state.app_mode == "listings":
         """, unsafe_allow_html=True)
     
     with col2:
-        st.markdown("<div style='margin-top: 8px;'>", unsafe_allow_html=True)
-        st.selectbox("👤 Vous êtes", team_members, key="current_user", label_visibility="visible")
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown(f"""
+            <div style='margin-top: 8px; text-align: center; padding: 12px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; border: 1px solid rgba(167, 139, 250, 0.3);'>
+                <p style='margin: 0; font-size: 14px; opacity: 0.7;'>Connecté en tant que</p>
+                <p style='margin: 0; font-size: 16px; font-weight: 600; color: {team_colors[st.session_state.current_user]};'>👤 {st.session_state.current_user}</p>
+            </div>
+        """, unsafe_allow_html=True)
     
     with col3:
         st.markdown("<div style='margin-top: 8px;'>", unsafe_allow_html=True)
