@@ -1896,7 +1896,7 @@ elif st.session_state.app_mode == "tasks":
                 st.markdown("<br>", unsafe_allow_html=True)
                 
                 # Trier par date de modification (les plus récentes en premier)
-                filtered_completed = filtered_completed.sort_values('modified_at', ascending=False)
+                filtered_completed = filtered_completed.sort_values('updated_at', ascending=False)
                 
                 for _, task in filtered_completed.iterrows():
                     priority_icon = "🔴" if task['priority'] == "Urgente" else "🟢"
@@ -1928,7 +1928,7 @@ elif st.session_state.app_mode == "tasks":
                     # Dates section
                     html_parts.append('<div style="display: flex; gap: 6px; flex-wrap: wrap; flex-direction: column; align-items: end;">')
                     html_parts.append(f'<span class="subtitle" style="white-space: nowrap; font-size: 11px;">Créée le {escape_html(task["created_at"])}</span>')
-                    html_parts.append(f'<span class="subtitle" style="white-space: nowrap; font-size: 11px; color: #4ADE80;">✅ Terminée le {escape_html(task["modified_at"])}</span>')
+                    html_parts.append(f'<span class="subtitle" style="white-space: nowrap; font-size: 11px; color: #4ADE80;">✅ Terminée le {escape_html(task["updated_at"])}</span>')
                     
                     # Modified by badge
                     if task.get('last_modified_by') and pd.notna(task.get('last_modified_by')):
