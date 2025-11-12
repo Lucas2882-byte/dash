@@ -1206,7 +1206,7 @@ elif st.session_state.app_mode == "tasks":
     
     st.markdown("<br>", unsafe_allow_html=True)
     
-    tab1, tab2, tab3, tab4 = st.tabs(["🚨 Urgences", "➕ Nouvelle Tâche", "👥 Par Personne", "📊 Toutes les Tâches"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["🚨 Urgences", "➕ Nouvelle Tâche", "👥 Par Personne", "📊 Toutes les Tâches", "📜 Historique"])
     
     with tab1:
         st.markdown("### 🚨 Tâches Urgentes")
@@ -1392,7 +1392,7 @@ elif st.session_state.app_mode == "tasks":
                 filter_status = st.multiselect(
                     "📋 Filtrer par statut",
                     ["À faire", "En cours", "Terminée"],
-                    default=["À faire", "En cours", "Terminée"],
+                    default=["À faire", "En cours"],
                     key="filter_person_status"
                 )
             
@@ -1845,6 +1845,104 @@ elif st.session_state.app_mode == "tasks":
                         if st.button("✏️", key=f"edit_all_{task['id']}", help="Modifier"):
                             st.session_state.edit_task_id = task['id']
                             st.rerun()
+    
+    with tab5:
+        st.markdown("### 📜 Historique des Tâches Terminées")
+        
+        # Récupérer toutes les tâches terminées
+        completed_tasks = all_tasks[all_tasks['status'] == 'Terminée']
+        
+        if completed_tasks.empty:
+            st.markdown("""
+                <div class="card" style="text-align: center; padding: 48px;">
+                    <div style="font-size: 64px; margin-bottom: 16px;">✨</div>
+                    <h3>Aucune tâche terminée</h3>
+                    <p class="subtitle">Les tâches complétées apparaîtront ici</p>
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            # Filtres pour l'historique
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                filter_history_person = st.multiselect(
+                    "Filtrer par personne",
+                    team_members,
+                    default=team_members,
+                    key="filter_history_person"
+                )
+            
+            with col2:
+                search_history_client = st.text_input(
+                    "🔍 Rechercher un client",
+                    placeholder="Nom du client...",
+                    key="search_history_client"
+                )
+            
+            # Appliquer les filtres
+            filtered_completed = completed_tasks[completed_tasks['assigned_to'].isin(filter_history_person)]
+            
+            if search_history_client:
+                filtered_completed = filtered_completed[
+                    filtered_completed['client_name'].str.contains(search_history_client, case=False, na=False)
+                ]
+            
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            if filtered_completed.empty:
+                st.info("Aucune tâche terminée ne correspond aux filtres")
+            else:
+                st.markdown(f"**{len(filtered_completed)} tâche(s) terminée(s)**")
+                st.markdown("<br>", unsafe_allow_html=True)
+                
+                # Trier par date de modification (les plus récentes en premier)
+                filtered_completed = filtered_completed.sort_values('modified_at', ascending=False)
+                
+                for _, task in filtered_completed.iterrows():
+                    priority_icon = "🔴" if task['priority'] == "Urgente" else "🟢"
+                    person_color = team_colors.get(str(task['assigned_to']), '#7A9A7E')
+                    
+                    html_parts = ['<div class="card" style="opacity: 0.8;">']
+                    html_parts.append('<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">')
+                    html_parts.append('<div style="flex: 1;">')
+                    html_parts.append(f'<h2 style="margin: 0 0 6px 0; font-size: 20px; font-weight: 700; color: #E8E9ED;">✅ {escape_html(task["title"])}</h2>')
+                    html_parts.append('<div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">')
+                    
+                    # Client badge
+                    if task.get('client_name'):
+                        html_parts.append(f'<span class="status-badge" style="background: rgba(139, 92, 246, 0.15); color: #A78BFA;">👤 {escape_html(task["client_name"])}</span>')
+                    
+                    # Person info
+                    html_parts.append('<div style="display: flex; align-items: center; gap: 6px;">')
+                    html_parts.append(f'<div style="width: 24px; height: 24px; border-radius: 50%; background: {person_color}; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 11px;">')
+                    html_parts.append(f'{escape_html(task["assigned_to"][0])}')
+                    html_parts.append('</div>')
+                    html_parts.append(f'<span style="font-weight: 500; color: #E8E9ED; font-size: 13px;">{escape_html(task["assigned_to"])}</span>')
+                    html_parts.append('</div>')
+                    
+                    # Priority badge
+                    html_parts.append(f'<span class="status-badge" style="background: rgba(34, 197, 94, 0.15); color: #4ADE80;">{priority_icon} {escape_html(task["priority"])}</span>')
+                    
+                    html_parts.append('</div></div>')
+                    
+                    # Dates section
+                    html_parts.append('<div style="display: flex; gap: 6px; flex-wrap: wrap; flex-direction: column; align-items: end;">')
+                    html_parts.append(f'<span class="subtitle" style="white-space: nowrap; font-size: 11px;">Créée le {escape_html(task["created_at"])}</span>')
+                    html_parts.append(f'<span class="subtitle" style="white-space: nowrap; font-size: 11px; color: #4ADE80;">✅ Terminée le {escape_html(task["modified_at"])}</span>')
+                    
+                    # Modified by badge
+                    if task.get('last_modified_by') and pd.notna(task.get('last_modified_by')):
+                        html_parts.append(f'<span class="subtitle" style="white-space: nowrap; font-size: 11px; color: #A78BFA;">✏️ Par {escape_html(task["last_modified_by"])}</span>')
+                    
+                    html_parts.append('</div></div>')
+                    
+                    # Description
+                    if task.get('description') and str(task.get('description')).strip():
+                        html_parts.append(f'<p style="color: #9CA3AF; margin: 8px 0 0 0; font-size: 13px;">{escape_html(task["description"])}</p>')
+                    
+                    html_parts.append('</div>')
+                    
+                    st.markdown(''.join(html_parts), unsafe_allow_html=True)
 
 elif st.session_state.app_mode == "listings":
     db.check_deadlines_and_create_tasks()
