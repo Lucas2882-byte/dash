@@ -309,13 +309,7 @@ def render_tasks_table_with_edit(display_df, original_df, column_order, person_c
                     task_id = task_ids_map.get(idx)
                     if task_id:
                         # Récupérer les valeurs éditées
-                        titre = edited_row.get('Titre')
-                        
-                        # Valider que le titre n'est pas vide
-                        if not titre or (isinstance(titre, str) and titre.strip() == ''):
-                            st.error("❌ Le titre ne peut pas être vide !")
-                            continue
-                        
+                        titre = edited_row.get('Titre') if pd.notna(edited_row.get('Titre')) else ''
                         description = edited_row.get('Description') if pd.notna(edited_row.get('Description')) else None
                         client_name = edited_row.get('Client') if pd.notna(edited_row.get('Client')) else None
                         
