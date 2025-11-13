@@ -298,67 +298,82 @@ def render_tasks_table_with_edit(display_df, original_df, column_order, person_c
     
     # Détecter les changements et les sauvegarder
     if not df_to_edit.equals(edited_df):
-        # Trouver les lignes modifiées
-        for idx in edited_df.index:
-            if idx in df_to_edit.index:
-                original_row = df_to_edit.loc[idx]
-                edited_row = edited_df.loc[idx]
-                
-                # Vérifier si la ligne a changé
-                if not original_row.equals(edited_row):
-                    task_id = task_ids_map.get(idx)
-                    if task_id:
-                        # Récupérer les valeurs éditées
-                        titre = edited_row.get('Titre') if pd.notna(edited_row.get('Titre')) else ''
-                        description = edited_row.get('Description') if pd.notna(edited_row.get('Description')) else None
-                        client_name = edited_row.get('Client') if pd.notna(edited_row.get('Client')) else None
-                        
-                        # Nettoyer les émojis des valeurs avant de sauvegarder
-                        priorite = edited_row.get('Priorité', '').replace('🔴 ', '').replace('🟢 ', '').strip()
-                        statut = edited_row.get('Statut', '').replace('🔴 ', '').replace('🟡 ', '').replace('🟢 ', '').strip()
-                        
-                        # Nettoyer les émojis de la catégorie
-                        categorie_raw = edited_row.get('Catégorie')
-                        if pd.notna(categorie_raw):
-                            # Retirer tous les émojis possibles des catégories
-                            categorie = (categorie_raw
-                                .replace('💖 ', '')
-                                .replace('🔵 ', '')
-                                .replace('🆕 ', '')
-                                .replace('📦 ', '')
-                                .replace('🔔 ', '')
-                                .replace('🟣 ', '')
-                                .replace('🌊 ', '')
-                                .replace('🌱 ', '')
-                                .replace('📞 ', '')
-                                .replace('📋 ', '')
-                                .replace('🔴 ', '')
-                                .replace('⚪ ', '')
-                                .strip()
-                            )
-                        else:
-                            categorie = None
-                        deadline = edited_row.get("Date d'échéance") if pd.notna(edited_row.get("Date d'échéance")) else None
-                        
-                        # Récupérer l'assignation actuelle
-                        task = db.get_task_by_id(task_id)
-                        if task is not None:
-                            assigned_to = task['assigned_to']
+        # Éviter les boucles infinies de rerun
+        if f'last_save_{editor_key}' not in st.session_state:
+            st.session_state[f'last_save_{editor_key}'] = None
+        
+        current_changes = edited_df.to_json()
+        
+        # Si c'est une vraie nouvelle modification (pas un rerun après sauvegarde)
+        if st.session_state[f'last_save_{editor_key}'] != current_changes:
+            # Trouver les lignes modifiées
+            changes_saved = False
+            for idx in edited_df.index:
+                if idx in df_to_edit.index:
+                    original_row = df_to_edit.loc[idx]
+                    edited_row = edited_df.loc[idx]
+                    
+                    # Vérifier si la ligne a changé
+                    if not original_row.equals(edited_row):
+                        task_id = task_ids_map.get(idx)
+                        if task_id:
+                            # Récupérer les valeurs éditées
+                            titre = edited_row.get('Titre') if pd.notna(edited_row.get('Titre')) else ''
+                            description = edited_row.get('Description') if pd.notna(edited_row.get('Description')) else None
+                            client_name = edited_row.get('Client') if pd.notna(edited_row.get('Client')) else None
                             
-                            # Mettre à jour dans la base de données
-                            db.update_task(
-                                task_id,
-                                titre,
-                                description,
-                                client_name,
-                                assigned_to,
-                                priorite,
-                                statut,
-                                st.session_state.current_user if 'current_user' in st.session_state else "Franck",
-                                deadline,
-                                categorie
-                            )
-                            st.toast("✅ Tâche mise à jour et synchronisée sur GitHub !", icon="✅")
+                            # Nettoyer les émojis des valeurs avant de sauvegarder
+                            priorite = edited_row.get('Priorité', '').replace('🔴 ', '').replace('🟢 ', '').strip()
+                            statut = edited_row.get('Statut', '').replace('🔴 ', '').replace('🟡 ', '').replace('🟢 ', '').strip()
+                            
+                            # Nettoyer les émojis de la catégorie
+                            categorie_raw = edited_row.get('Catégorie')
+                            if pd.notna(categorie_raw):
+                                # Retirer tous les émojis possibles des catégories
+                                categorie = (categorie_raw
+                                    .replace('💖 ', '')
+                                    .replace('🔵 ', '')
+                                    .replace('🆕 ', '')
+                                    .replace('📦 ', '')
+                                    .replace('🔔 ', '')
+                                    .replace('🟣 ', '')
+                                    .replace('🌊 ', '')
+                                    .replace('🌱 ', '')
+                                    .replace('📞 ', '')
+                                    .replace('📋 ', '')
+                                    .replace('🔴 ', '')
+                                    .replace('⚪ ', '')
+                                    .strip()
+                                )
+                            else:
+                                categorie = None
+                            deadline = edited_row.get("Date d'échéance") if pd.notna(edited_row.get("Date d'échéance")) else None
+                            
+                            # Récupérer l'assignation actuelle
+                            task = db.get_task_by_id(task_id)
+                            if task is not None:
+                                assigned_to = task['assigned_to']
+                                
+                                # Mettre à jour dans la base de données
+                                db.update_task(
+                                    task_id,
+                                    titre,
+                                    description,
+                                    client_name,
+                                    assigned_to,
+                                    priorite,
+                                    statut,
+                                    st.session_state.current_user if 'current_user' in st.session_state else "Franck",
+                                    deadline,
+                                    categorie
+                                )
+                                changes_saved = True
+            
+            if changes_saved:
+                # Marquer ce changement comme sauvegardé
+                st.session_state[f'last_save_{editor_key}'] = current_changes
+                st.toast("✅ Tâche mise à jour et synchronisée sur GitHub !", icon="✅")
+                st.rerun()
 
 def create_clickable_card(title, subtitle, icon_base64, card_id):
     """Crée une carte iOS premium entièrement cliquable"""
