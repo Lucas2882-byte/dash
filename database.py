@@ -5,10 +5,6 @@ import os
 
 DATABASE_FILE = os.path.join(os.path.dirname(__file__), "team_tasks.db")
 
-def _auto_sync_github():
-    """Synchronisation automatique désactivée - utilisez les boutons manuels dans la sidebar"""
-    pass
-
 def init_database():
     """Initialise la base de données avec la table des tâches"""
     conn = sqlite3.connect(DATABASE_FILE)
@@ -143,9 +139,6 @@ def mark_overdue_tasks_urgent():
     conn.commit()
     conn.close()
     
-    if rows_updated > 0:
-        _auto_sync_github()
-    
     return rows_updated
 
 def add_task(title, description, assigned_to, priority='Normale', client_name='', deadline=None, category=None):
@@ -168,7 +161,6 @@ def add_task(title, description, assigned_to, priority='Normale', client_name=''
     
     conn.commit()
     conn.close()
-    _auto_sync_github()
 
 def get_all_tasks():
     """Récupère toutes les tâches"""
@@ -202,7 +194,6 @@ def update_task_status(task_id, new_status, modified_by=None):
     
     conn.commit()
     conn.close()
-    _auto_sync_github()
 
 def update_task(task_id, title, description, client_name, assigned_to, priority, status, modified_by=None, deadline=None, category=None):
     """Met à jour tous les champs d'une tâche"""
@@ -218,7 +209,6 @@ def update_task(task_id, title, description, client_name, assigned_to, priority,
     
     conn.commit()
     conn.close()
-    _auto_sync_github()
 
 def get_task_by_id(task_id):
     """Récupère une tâche par son ID"""
@@ -249,7 +239,6 @@ def delete_task(task_id):
     
     conn.commit()
     conn.close()
-    _auto_sync_github()
 
 def reorder_tasks(person, task_orders):
     """Réorganise les tâches d'une personne
@@ -268,7 +257,6 @@ def reorder_tasks(person, task_orders):
     
     conn.commit()
     conn.close()
-    _auto_sync_github()
 
 def get_urgent_tasks():
     """Récupère les tâches urgentes"""
@@ -316,7 +304,6 @@ def add_google_listing(business_name, address, phone, website, category, descrip
     
     conn.commit()
     conn.close()
-    _auto_sync_github()
     return listing_id
 
 def get_all_google_listings():
@@ -355,7 +342,6 @@ def update_google_listing(listing_id, business_name, address, phone, website, ca
     
     conn.commit()
     conn.close()
-    _auto_sync_github()
 
 def delete_google_listing(listing_id):
     """Supprime une fiche Google"""
@@ -367,7 +353,6 @@ def delete_google_listing(listing_id):
     
     conn.commit()
     conn.close()
-    _auto_sync_github()
 
 def add_local_service(service_name, service_type, provider, area_coverage, phone, email, description, managed_by):
     """Ajoute un nouveau service local"""
@@ -401,7 +386,6 @@ def add_local_service(service_name, service_type, provider, area_coverage, phone
     
     conn.commit()
     conn.close()
-    _auto_sync_github()
 
 def get_all_local_services():
     """Récupère tous les services locaux"""
@@ -439,7 +423,6 @@ def update_local_service(service_id, service_name, service_type, provider, area_
     
     conn.commit()
     conn.close()
-    _auto_sync_github()
 
 def delete_local_service(service_id):
     """Supprime un service local"""
@@ -451,7 +434,6 @@ def delete_local_service(service_id):
     
     conn.commit()
     conn.close()
-    _auto_sync_github()
 
 def get_workflow_steps(listing_id):
     """Récupère toutes les étapes du workflow pour une fiche"""
@@ -526,7 +508,6 @@ def update_workflow_step(step_id, completed, notes=None, deadline=None):
     
     conn.commit()
     conn.close()
-    _auto_sync_github()
 
 def update_listing_current_step(listing_id, current_step):
     """Met à jour l'étape principale courante d'une fiche"""
@@ -542,7 +523,6 @@ def update_listing_current_step(listing_id, current_step):
     
     conn.commit()
     conn.close()
-    _auto_sync_github()
 
 def get_workflow_progress(listing_id):
     """Calcule la progression du workflow pour une fiche"""
@@ -605,9 +585,6 @@ def create_workflow_steps_for_listing(listing_id, auto_sync=True):
     
     conn.close()
     
-    if changes_made and auto_sync:
-        _auto_sync_github()
-    
     return changes_made
 
 def migrate_old_workflow_steps():
@@ -652,9 +629,6 @@ def migrate_old_workflow_steps():
     
     conn.commit()
     conn.close()
-    
-    if changes_made:
-        _auto_sync_github()
 
 def ensure_all_listings_have_workflows():
     """S'assure que toutes les fiches Google ont des workflow steps"""
@@ -669,9 +643,6 @@ def ensure_all_listings_have_workflows():
     for listing in listings:
         if create_workflow_steps_for_listing(listing[0], auto_sync=False):
             any_changes = True
-    
-    if any_changes:
-        _auto_sync_github()
 
 def check_deadlines_and_create_tasks():
     """Vérifie les deadlines dépassées et crée des tâches pour Lise"""
@@ -720,9 +691,6 @@ def check_deadlines_and_create_tasks():
     
     conn.commit()
     conn.close()
-    
-    if tasks_created:
-        _auto_sync_github()
 
 def get_service_workflow_steps(service_id):
     """Récupère les étapes de workflow d'un service local"""
@@ -797,7 +765,6 @@ def update_service_workflow_step(step_id, completed, notes=None, deadline=None):
     
     conn.commit()
     conn.close()
-    _auto_sync_github()
 
 def get_service_workflow_progress(service_id):
     """Calcule la progression du workflow pour un service local"""
@@ -856,9 +823,6 @@ def create_workflow_steps_for_service(service_id, auto_sync=True):
     
     conn.close()
     
-    if changes_made and auto_sync:
-        _auto_sync_github()
-    
     return changes_made
 
 def ensure_all_services_have_workflows():
@@ -874,9 +838,6 @@ def ensure_all_services_have_workflows():
     for service in services:
         if create_workflow_steps_for_service(service[0], auto_sync=False):
             any_changes = True
-    
-    if any_changes:
-        _auto_sync_github()
 
 def migrate_local_service_workflow_steps():
     """Migre les étapes de workflow des services locaux vers la nouvelle structure"""
