@@ -1191,6 +1191,7 @@ def show_workflow_dialog(listing_id):
                     if success:
                         st.session_state.last_github_upload = datetime.now().timestamp()
                         st.success("✅ Sauvegardé sur GitHub !")
+                        st.rerun()
                     else:
                         st.error(f"❌ {message}")
         with col2:
@@ -1351,6 +1352,7 @@ def show_service_workflow_dialog(service_id):
                     if success:
                         st.session_state.last_github_upload = datetime.now().timestamp()
                         st.success("✅ Sauvegardé sur GitHub !")
+                        st.rerun()
                     else:
                         st.error(f"❌ {message}")
         with col2:
@@ -3242,6 +3244,7 @@ with st.sidebar:
                         st.session_state.last_github_upload = datetime.now().timestamp()
                         st.success(message)
                         st.balloons()
+                        st.rerun()
                     else:
                         st.error(message)
         
