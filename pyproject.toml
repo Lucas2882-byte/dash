@@ -1,0 +1,11 @@
+[project]
+name = "python-template"
+version = "0.1.0"
+description = "Gestion de Tâches et Fiches"
+authors = [{name = "Team", email = "team@example.com"}]
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.3.3",
+    "streamlit>=1.51.0",
+    "requests>=2.31.0",
+]
