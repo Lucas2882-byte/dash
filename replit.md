@@ -9,6 +9,25 @@ This is a team task management application built with Streamlit and SQLite. It p
 
 ## Recent Changes
 
+### November 13, 2025 - Manual GitHub Sync with Smart Buttons
+- **Disabled automatic GitHub sync** to make the interface ultra-responsive
+- **Added "📤 Enregistrer sur GitHub" buttons** at strategic locations:
+  - Always-visible button below the tasks table
+  - Button in GMB workflow dialog (alongside Close button)
+  - Button in Local Services workflow dialog (alongside Close button)
+- **Auto-save on creation** for instant GitHub backup:
+  - Adding a task → automatic GitHub save
+  - Adding a Google listing → automatic GitHub save
+  - Adding a local service → automatic GitHub save
+- **Bug fixed**: Timestamp to string conversion for dates (prevented sqlite3.ProgrammingError)
+- **Improved user experience**:
+  - Instant interface updates without waiting for network operations
+  - Simple, discrete buttons instead of large banners
+  - Clear feedback messages ("✅ Sauvegardé sur GitHub!")
+  - Graceful fallback if GitHub sync is not configured
+- **Updated sidebar**: GitHub sync section now shows smart indicator comparing local DB timestamp vs last upload
+- All messages updated to reflect local-only saves with manual GitHub buttons
+
 ### October 31, 2025 - Google My Business Workflow System
 - Added comprehensive workflow tracking system for Google My Business listings
 - Three main workflow stages with sub-steps:
