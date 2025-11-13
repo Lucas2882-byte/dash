@@ -296,91 +296,14 @@ def render_tasks_table_with_edit(display_df, original_df, column_order, person_c
         key=editor_key
     )
     
-    # Détecter les changements et les sauvegarder
+    # Sauvegarder les modifications quand on clique sur le bouton GitHub
+    # Stocker les modifications dans session_state pour sauvegarde manuelle
     if not df_to_edit.equals(edited_df):
-        # Éviter les boucles infinies de rerun
-        if f'last_save_{editor_key}' not in st.session_state:
-            st.session_state[f'last_save_{editor_key}'] = None
-        
-        current_changes = edited_df.to_json()
-        
-        # Si c'est une vraie nouvelle modification (pas un rerun après sauvegarde)
-        if st.session_state[f'last_save_{editor_key}'] != current_changes:
-            # Trouver les lignes modifiées
-            changes_saved = False
-            for idx in edited_df.index:
-                if idx in df_to_edit.index:
-                    original_row = df_to_edit.loc[idx]
-                    edited_row = edited_df.loc[idx]
-                    
-                    # Vérifier si la ligne a changé
-                    if not original_row.equals(edited_row):
-                        task_id = task_ids_map.get(idx)
-                        if task_id:
-                            # Récupérer les valeurs éditées
-                            titre = edited_row.get('Titre') if pd.notna(edited_row.get('Titre')) else ''
-                            description = edited_row.get('Description') if pd.notna(edited_row.get('Description')) else None
-                            client_name = edited_row.get('Client') if pd.notna(edited_row.get('Client')) else None
-                            
-                            # Nettoyer les émojis des valeurs avant de sauvegarder
-                            priorite = edited_row.get('Priorité', '').replace('🔴 ', '').replace('🟢 ', '').strip()
-                            statut = edited_row.get('Statut', '').replace('🔴 ', '').replace('🟡 ', '').replace('🟢 ', '').strip()
-                            
-                            # Nettoyer les émojis de la catégorie
-                            categorie_raw = edited_row.get('Catégorie')
-                            if pd.notna(categorie_raw):
-                                # Retirer tous les émojis possibles des catégories
-                                categorie = (categorie_raw
-                                    .replace('💖 ', '')
-                                    .replace('🔵 ', '')
-                                    .replace('🆕 ', '')
-                                    .replace('📦 ', '')
-                                    .replace('🔔 ', '')
-                                    .replace('🟣 ', '')
-                                    .replace('🌊 ', '')
-                                    .replace('🌱 ', '')
-                                    .replace('📞 ', '')
-                                    .replace('📋 ', '')
-                                    .replace('🔴 ', '')
-                                    .replace('⚪ ', '')
-                                    .strip()
-                                )
-                            else:
-                                categorie = None
-                            deadline_raw = edited_row.get("Date d'échéance")
-                            if pd.notna(deadline_raw):
-                                if hasattr(deadline_raw, 'strftime'):
-                                    deadline = deadline_raw.strftime('%Y-%m-%d')
-                                else:
-                                    deadline = str(deadline_raw)
-                            else:
-                                deadline = None
-                            
-                            # Récupérer l'assignation actuelle
-                            task = db.get_task_by_id(task_id)
-                            if task is not None:
-                                assigned_to = task['assigned_to']
-                                
-                                # Mettre à jour dans la base de données
-                                db.update_task(
-                                    task_id,
-                                    titre,
-                                    description,
-                                    client_name,
-                                    assigned_to,
-                                    priorite,
-                                    statut,
-                                    st.session_state.current_user if 'current_user' in st.session_state else "Franck",
-                                    deadline,
-                                    categorie
-                                )
-                                changes_saved = True
-            
-            if changes_saved:
-                # Marquer ce changement comme sauvegardé
-                st.session_state[f'last_save_{editor_key}'] = current_changes
-                st.toast("✅ Tâche mise à jour et sauvegardée localement !", icon="✅")
-                st.rerun()
+        st.session_state[f'pending_changes_{editor_key}'] = {
+            'edited_df': edited_df,
+            'task_ids_map': task_ids_map
+        }
+        st.info("💡 Vous avez des modifications non sauvegardées. Cliquez sur 'Enregistrer sur GitHub' pour les sauvegarder.", icon="ℹ️")
     
     # Bouton GitHub toujours visible en dessous du tableau
     try:
@@ -391,6 +314,64 @@ def render_tasks_table_with_edit(display_df, original_df, column_order, person_c
         with col2:
             if st.button("📤 Enregistrer sur GitHub", key=f"save_github_{editor_key}", use_container_width=True, type="primary", help="Sauvegarder toutes les modifications sur GitHub"):
                 with st.spinner("Sauvegarde en cours..."):
+                    # D'abord sauvegarder les modifications locales du tableau
+                    if f'pending_changes_{editor_key}' in st.session_state:
+                        pending = st.session_state[f'pending_changes_{editor_key}']
+                        edited_df_pending = pending['edited_df']
+                        task_ids_map_pending = pending['task_ids_map']
+                        
+                        # Sauvegarder chaque tâche modifiée
+                        for idx in edited_df_pending.index:
+                            task_id = task_ids_map_pending.get(idx)
+                            if task_id:
+                                edited_row = edited_df_pending.loc[idx]
+                                
+                                # Récupérer les valeurs
+                                titre = edited_row.get('Titre') if pd.notna(edited_row.get('Titre')) else ''
+                                description = edited_row.get('Description') if pd.notna(edited_row.get('Description')) else None
+                                client_name = edited_row.get('Client') if pd.notna(edited_row.get('Client')) else None
+                                
+                                # Nettoyer les émojis
+                                priorite = edited_row.get('Priorité', '').replace('🔴 ', '').replace('🟢 ', '').strip()
+                                statut = edited_row.get('Statut', '').replace('🔴 ', '').replace('🟡 ', '').replace('🟢 ', '').strip()
+                                
+                                categorie_raw = edited_row.get('Catégorie')
+                                if pd.notna(categorie_raw):
+                                    categorie = (categorie_raw
+                                        .replace('💬 ', '').replace('⚙️ ', '').replace('👤 ', '')
+                                        .replace('📦 ', '').replace('💰 ', '').replace('📝 ', '')
+                                        .replace('📍 ', '').replace('🔍 ', '').replace('📞 ', '')
+                                        .replace('🚨 ', '').replace('⚪ ', '').strip()
+                                    )
+                                else:
+                                    categorie = None
+                                
+                                deadline_raw = edited_row.get("Date d'échéance")
+                                if pd.notna(deadline_raw):
+                                    if hasattr(deadline_raw, 'strftime'):
+                                        deadline = deadline_raw.strftime('%Y-%m-%d')
+                                    else:
+                                        deadline = str(deadline_raw)
+                                else:
+                                    deadline = None
+                                
+                                # Récupérer l'assignation
+                                task = db.get_task_by_id(task_id)
+                                if task is not None:
+                                    assigned_to = task['assigned_to']
+                                    
+                                    # Sauvegarder dans la base de données
+                                    db.update_task(
+                                        task_id, titre, description, client_name,
+                                        assigned_to, priorite, statut,
+                                        st.session_state.current_user if 'current_user' in st.session_state else "Franck",
+                                        deadline, categorie
+                                    )
+                        
+                        # Nettoyer les modifications en attente
+                        del st.session_state[f'pending_changes_{editor_key}']
+                    
+                    # Ensuite uploader sur GitHub
                     success, message = github_sync.upload_database_to_github(db.DATABASE_FILE)
                     if success:
                         st.session_state.last_github_upload = datetime.now().timestamp()
