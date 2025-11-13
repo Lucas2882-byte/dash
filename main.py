@@ -358,9 +358,7 @@ def render_tasks_table_with_edit(display_df, original_df, column_order, person_c
                                 deadline,
                                 categorie
                             )
-        
-        st.success("✅ Modifications enregistrées !")
-        st.rerun()
+                            st.toast("✅ Tâche mise à jour et synchronisée sur GitHub !", icon="✅")
 
 def create_clickable_card(title, subtitle, icon_base64, card_id):
     """Crée une carte iOS premium entièrement cliquable"""
