@@ -2011,7 +2011,7 @@ elif st.session_state.app_mode == "tasks":
                     
                     # Synchronisation avec GitHub via API
                     git_success, git_message = github_backup.upload_to_github(
-                        "Python/team_tasks.db",
+                        "team_tasks.db",
                         commit_message=f"Nouvelle tâche: {title}",
                         repo_filename="team_tasks.db"
                     )
@@ -2667,7 +2667,7 @@ elif st.session_state.app_mode == "listings":
                             
                             # Synchronisation avec GitHub via API
                             git_success, git_message = github_backup.upload_to_github(
-                                "Python/team_tasks.db",
+                                "team_tasks.db",
                                 commit_message=f"Nouvelle fiche: {business_name}",
                                 repo_filename="team_tasks.db"
                             )
@@ -2859,7 +2859,7 @@ elif st.session_state.app_mode == "listings":
                             
                             # Synchronisation avec GitHub via API
                             git_success, git_message = github_backup.upload_to_github(
-                                "Python/team_tasks.db",
+                                "team_tasks.db",
                                 commit_message=f"Nouveau service: {service_name}",
                                 repo_filename="team_tasks.db"
                             )
