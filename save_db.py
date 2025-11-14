@@ -20,7 +20,24 @@ def save_database_to_github(db_filename="team_tasks.db", commit_message=None):
         return False, f"❌ Fichier {db_filename} introuvable"
     
     try:
-        # 1. Ajouter seulement le fichier de base de données (pas tout)
+        # 1. Vérifier s'il y a des changements dans le fichier (vs dernier commit)
+        result = subprocess.run(
+            ["git", "diff", "--quiet", db_filename],
+            capture_output=True,
+            timeout=10
+        )
+        
+        # Si returncode == 0, il n'y a rien à commiter
+        if result.returncode == 0:
+            return True, "✅ Aucun changement à sauvegarder"
+        
+        # 2. Créer le message de commit
+        if not commit_message:
+            from datetime import datetime
+            commit_message = f"update database - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+        
+        # 3. Ajouter le fichier ET commiter en une seule opération atomique
+        # On refait git add juste avant commit pour capturer le dernier état
         result = subprocess.run(
             ["git", "add", db_filename],
             capture_output=True,
@@ -31,22 +48,7 @@ def save_database_to_github(db_filename="team_tasks.db", commit_message=None):
         if result.returncode != 0:
             return False, f"❌ Erreur git add: {result.stderr}"
         
-        # 2. Vérifier s'il y a des changements à commiter
-        result = subprocess.run(
-            ["git", "diff", "--cached", "--quiet"],
-            capture_output=True,
-            timeout=10
-        )
-        
-        # Si returncode == 0, il n'y a rien à commiter
-        if result.returncode == 0:
-            return True, "✅ Aucun changement à sauvegarder"
-        
-        # 3. Créer le commit
-        if not commit_message:
-            from datetime import datetime
-            commit_message = f"update database - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-        
+        # 4. Créer le commit immédiatement après le add
         result = subprocess.run(
             ["git", "commit", "-m", commit_message],
             capture_output=True,
@@ -57,7 +59,7 @@ def save_database_to_github(db_filename="team_tasks.db", commit_message=None):
         if result.returncode != 0:
             return False, f"❌ Erreur git commit: {result.stderr}"
         
-        # 4. Pull avant push pour éviter les conflits (fast-forward seulement)
+        # 5. Pull avant push pour éviter les conflits (fast-forward seulement)
         result = subprocess.run(
             ["git", "pull", "--ff-only"],
             capture_output=True,
@@ -68,7 +70,7 @@ def save_database_to_github(db_filename="team_tasks.db", commit_message=None):
         # Ignorer les erreurs de pull si on est déjà à jour ou si fast-forward n'est pas possible
         # (dans ce cas, on essaie quand même de pusher)
         
-        # 5. Push sur GitHub
+        # 6. Push sur GitHub
         result = subprocess.run(
             ["git", "push"],
             capture_output=True,
