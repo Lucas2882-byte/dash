@@ -19,6 +19,20 @@ def save_database_to_github(db_filename="team_tasks.db", commit_message=None):
     if not db_path.exists():
         return False, f"❌ Fichier {db_filename} introuvable"
     
+    # Configurer Git si nécessaire
+    try:
+        result = subprocess.run(
+            ["git", "config", "user.email"],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        if result.returncode != 0 or not result.stdout.strip():
+            subprocess.run(["git", "config", "--global", "user.email", "app@replit.local"], timeout=5)
+            subprocess.run(["git", "config", "--global", "user.name", "Replit App"], timeout=5)
+    except:
+        pass
+    
     try:
         # 1. Vérifier s'il y a des changements dans le fichier (vs dernier commit)
         result = subprocess.run(
