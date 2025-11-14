@@ -132,7 +132,8 @@ CATEGORY_EMOJI_MAP = {
 def auto_save_to_github():
     """
     Sauvegarde automatique de la base de données sur GitHub via Git natif.
-    Utilise un verrou basé sur fichier pour éviter les sauvegardes simultanées.
+    Utilise un verrou basé sur fichier pour sérialiser les sauvegardes.
+    Si une sauvegarde est en cours, attend qu'elle se termine avant de sauvegarder.
     
     Returns:
         tuple: (success: bool, message: str)
@@ -149,11 +150,9 @@ def auto_save_to_github():
         # Créer ou ouvrir le fichier de verrou
         lock_file = open(lock_file_path, 'w')
         
-        # Essayer d'acquérir le verrou (non-bloquant)
-        try:
-            fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError:
-            return False, "⏳ Une sauvegarde est déjà en cours..."
+        # Acquérir le verrou (BLOQUANT - attend si une autre sauvegarde est en cours)
+        # Cela garantit que toutes les sauvegardes sont exécutées, jamais ignorées
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
         
         # Appeler la fonction de sauvegarde
         success, message = save_db.save_database_to_github("team_tasks.db")
