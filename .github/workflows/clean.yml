@@ -6,24 +6,25 @@ on:
 jobs:
   clean:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
-          persist-credentials: true   # pour push après commit
+          persist-credentials: true
 
       - name: Clean all files except README.md and .github
         run: |
           echo "🧹 Suppression des fichiers..."
-          find . -mindepth 1 -maxdepth 1 ! -name "README.md" ! -path "./.github*" -exec rm -rf {} \;
-          echo "✅ Fichiers supprimés"
+          find . -mindepth 1 -maxdepth 1 ! -name "README.md" ! -name ".github" -exec rm -rf {} \;
+          echo "✅ Nettoyage terminé"
 
       - name: Commit changes
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
           git add -A
-          git commit -m "Clean repo – removed all files except README.md and .github" || echo "📝 Rien à committer"
+          git commit -m "Clean repo – removed all files except README.md and .github" || echo "📝 Aucun changement"
 
       - name: Push changes
         run: |
