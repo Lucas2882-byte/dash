@@ -56,6 +56,8 @@ if 'show_workflow_service_id' not in st.session_state:
     st.session_state.show_workflow_service_id = None
 if 'git_save_in_progress' not in st.session_state:
     st.session_state.git_save_in_progress = False
+if 'pending_message' not in st.session_state:
+    st.session_state.pending_message = None
 
 # Gérer les query params pour l'édition de tâches
 try:
@@ -1399,6 +1401,20 @@ def show_service_workflow_dialog(service_id):
         st.session_state.show_workflow_service_id = None
         st.rerun()
 
+# Afficher les messages persistants après un rerun
+if st.session_state.pending_message:
+    msg_type, msg_text = st.session_state.pending_message
+    if msg_type == "warning":
+        st.warning(msg_text)
+    elif msg_type == "success":
+        st.success(msg_text)
+    elif msg_type == "error":
+        st.error(msg_text)
+    elif msg_type == "info":
+        st.info(msg_text)
+    # Effacer le message après l'avoir affiché
+    st.session_state.pending_message = None
+
 if not st.session_state.user_logged_in:
     st.markdown("""
         <div style="text-align: center; margin-top: 120px; margin-bottom: 60px;">
@@ -1996,9 +2012,11 @@ elif st.session_state.app_mode == "tasks":
                     # Upload automatique sur GitHub via Git natif
                     git_success, git_message = auto_save_to_github()
                     if not git_success:
-                        st.warning(f"⚠️ Tâche ajoutée localement mais GitHub sync a échoué: {git_message}")
+                        # Sauvegarder le message pour l'afficher après le rerun
+                        st.session_state.pending_message = ("warning", f"⚠️ Tâche ajoutée localement mais GitHub sync a échoué: {git_message}")
+                    else:
+                        st.session_state.pending_message = ("success", f"✅ Tâche ajoutée et assignée à {assigned_to} !")
                     
-                    st.success(f"✅ Tâche ajoutée et assignée à {assigned_to} !")
                     st.balloons()
                     st.rerun()
                 else:
