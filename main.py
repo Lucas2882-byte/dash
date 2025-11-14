@@ -131,9 +131,9 @@ CATEGORY_EMOJI_MAP = {
     "INFO URGENTE": "🚨"
 }
 
-def auto_save_to_github():
+def auto_save_to_github(commit_message=None):
     """
-    Sauvegarde automatique de la base de données sur GitHub via Git natif.
+    Sauvegarde automatique de la base de données sur GitHub via API.
     Utilise un verrou basé sur fichier pour sérialiser les sauvegardes.
     Si une sauvegarde est en cours, attend qu'elle se termine avant de sauvegarder.
     
@@ -145,7 +145,7 @@ def auto_save_to_github():
     from pathlib import Path
     
     # Utiliser un fichier de verrou global (pas session_state)
-    lock_file_path = Path(tempfile.gettempdir()) / "git_save_lock.lock"
+    lock_file_path = Path(tempfile.gettempdir()) / "github_upload_lock.lock"
     lock_file = None
     
     try:
@@ -156,8 +156,12 @@ def auto_save_to_github():
         # Cela garantit que toutes les sauvegardes sont exécutées, jamais ignorées
         fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
         
-        # Appeler la fonction de sauvegarde
-        success, message = save_db.save_database_to_github("team_tasks.db")
+        # Appeler la fonction de sauvegarde via API GitHub
+        success, message = github_backup.upload_to_github(
+            "team_tasks.db",
+            commit_message=commit_message,
+            repo_filename="team_tasks.db"
+        )
         
         return success, message
         
@@ -2009,11 +2013,9 @@ elif st.session_state.app_mode == "tasks":
                     if 'deadline_preset' in st.session_state:
                         del st.session_state.deadline_preset
                     
-                    # Synchronisation avec GitHub via API
-                    git_success, git_message = github_backup.upload_to_github(
-                        "team_tasks.db",
-                        commit_message=f"Nouvelle tâche: {title}",
-                        repo_filename="team_tasks.db"
+                    # Synchronisation avec GitHub via API (avec verrouillage)
+                    git_success, git_message = auto_save_to_github(
+                        commit_message=f"Nouvelle tâche: {title}"
                     )
                     
                     if not git_success:
@@ -2665,11 +2667,9 @@ elif st.session_state.app_mode == "listings":
                                     managed_by=current_user
                                 )
                             
-                            # Synchronisation avec GitHub via API
-                            git_success, git_message = github_backup.upload_to_github(
-                                "team_tasks.db",
-                                commit_message=f"Nouvelle fiche: {business_name}",
-                                repo_filename="team_tasks.db"
+                            # Synchronisation avec GitHub via API (avec verrouillage)
+                            git_success, git_message = auto_save_to_github(
+                                commit_message=f"Nouvelle fiche: {business_name}"
                             )
                             
                             if not git_success:
@@ -2857,11 +2857,9 @@ elif st.session_state.app_mode == "listings":
                                 phone, email, description, current_user
                             )
                             
-                            # Synchronisation avec GitHub via API
-                            git_success, git_message = github_backup.upload_to_github(
-                                "team_tasks.db",
-                                commit_message=f"Nouveau service: {service_name}",
-                                repo_filename="team_tasks.db"
+                            # Synchronisation avec GitHub via API (avec verrouillage)
+                            git_success, git_message = auto_save_to_github(
+                                commit_message=f"Nouveau service: {service_name}"
                             )
                             
                             if not git_success:
