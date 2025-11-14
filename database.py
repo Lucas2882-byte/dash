@@ -2,8 +2,87 @@ import sqlite3
 import pandas as pd
 from datetime import datetime
 import os
+import tempfile
 
 DATABASE_FILE = os.path.join(os.path.dirname(__file__), "team_tasks.db")
+
+def flush_and_snapshot(db_path=None):
+    """
+    Force la synchronisation de SQLite (checkpoint WAL) et crée un snapshot atomique.
+    Cette fonction garantit que toutes les modifications en cache sont écrites sur le disque
+    avant de créer une copie cohérente de la base de données.
+    
+    Args:
+        db_path: Chemin vers le fichier de base de données à sauvegarder.
+                 Si None, utilise DATABASE_FILE par défaut.
+    
+    Returns:
+        str: Chemin du fichier snapshot temporaire créé
+    
+    Raises:
+        FileNotFoundError: Si le fichier de base de données n'existe pas
+        sqlite3.Error: Si une erreur SQLite se produit (checkpoint WAL échoué, etc.)
+    """
+    # Utiliser DATABASE_FILE par défaut si aucun chemin n'est fourni
+    source_db_path = db_path if db_path is not None else DATABASE_FILE
+    
+    if not os.path.exists(source_db_path):
+        raise FileNotFoundError(f"Base de données introuvable: {source_db_path}")
+    
+    # Créer un fichier temporaire pour le snapshot
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.db')
+    snapshot_path = temp_file.name
+    temp_file.close()
+    
+    source_conn = None
+    dest_conn = None
+    
+    try:
+        # Ouvrir une connexion avec timeout élevé et busy_handler pour gérer la contention
+        source_conn = sqlite3.connect(source_db_path, timeout=60.0)
+        
+        # Forcer le checkpoint WAL pour écrire toutes les modifications sur le fichier principal
+        # TRUNCATE vide le WAL après le checkpoint pour garantir la cohérence
+        # Si le checkpoint échoue, une exception sera levée et propagée
+        cursor = source_conn.execute('PRAGMA wal_checkpoint(TRUNCATE)')
+        result = cursor.fetchone()
+        
+        # Vérifier que le checkpoint a réussi
+        # result = (busy, log, checkpointed) où busy=0 signifie succès
+        if result and result[0] != 0:
+            raise sqlite3.Error(f"WAL checkpoint échoué: base de données occupée (busy={result[0]})")
+        
+        source_conn.commit()
+        
+        # Créer un snapshot atomique en utilisant l'API de backup de SQLite
+        # Cette méthode est thread-safe et garantit une copie cohérente
+        dest_conn = sqlite3.connect(snapshot_path)
+        source_conn.backup(dest_conn)
+        
+        return snapshot_path
+        
+    except Exception as e:
+        # Nettoyer le fichier temporaire en cas d'erreur
+        if os.path.exists(snapshot_path):
+            try:
+                os.unlink(snapshot_path)
+            except:
+                pass
+        # Propager l'erreur - ne pas utiliser de fallback silencieux
+        raise sqlite3.Error(f"Échec de la création du snapshot atomique: {str(e)}") from e
+        
+    finally:
+        # Fermer les connexions dans l'ordre inverse
+        if dest_conn:
+            try:
+                dest_conn.close()
+            except:
+                pass
+        if source_conn:
+            try:
+                source_conn.close()
+            except:
+                pass
 
 def init_database():
     """Initialise la base de données avec la table des tâches"""
