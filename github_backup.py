@@ -6,6 +6,7 @@ import shutil
 import tempfile
 from datetime import datetime
 from pathlib import Path
+import database as db
 
 class GitHubBackupService:
     """Service pour sauvegarder la base de données SQLite sur GitHub"""
@@ -56,16 +57,29 @@ class GitHubBackupService:
         return all([self.token, self.repo_owner, self.repo_name, self.branch])
     
     def create_snapshot(self, db_path):
-        """Crée une copie temporaire de la base de données"""
+        """
+        Crée un snapshot atomique de la base de données SQLite.
+        Utilise database.flush_and_snapshot() pour garantir que toutes les modifications
+        en cache (WAL) sont écrites sur le disque avant la copie.
+        
+        Args:
+            db_path: Chemin vers le fichier de base de données à sauvegarder
+        
+        Returns:
+            str: Chemin du fichier snapshot temporaire
+        
+        Raises:
+            FileNotFoundError: Si le fichier de base de données n'existe pas
+            sqlite3.Error: Si le checkpoint WAL ou la création du snapshot échoue
+        """
         if not os.path.exists(db_path):
             raise FileNotFoundError(f"Base de données introuvable: {db_path}")
         
-        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.db')
-        temp_path = temp_file.name
-        temp_file.close()
-        
-        shutil.copy2(db_path, temp_path)
-        return temp_path
+        # Utiliser la fonction centralisée qui force le checkpoint WAL
+        # et crée un snapshot atomique thread-safe.
+        # L'erreur est propagée si le snapshot échoue - pas de fallback dangereux
+        # vers shutil.copy2 qui pourrait copier des données incohérentes.
+        return db.flush_and_snapshot(db_path)
     
     def fetch_existing_sha(self, repo_filename):
         """Récupère le SHA du fichier existant sur GitHub"""
