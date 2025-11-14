@@ -1401,20 +1401,6 @@ def show_service_workflow_dialog(service_id):
         st.session_state.show_workflow_service_id = None
         st.rerun()
 
-# Afficher les messages persistants après un rerun
-if st.session_state.pending_message:
-    msg_type, msg_text = st.session_state.pending_message
-    if msg_type == "warning":
-        st.warning(msg_text)
-    elif msg_type == "success":
-        st.success(msg_text)
-    elif msg_type == "error":
-        st.error(msg_text)
-    elif msg_type == "info":
-        st.info(msg_text)
-    # Effacer le message après l'avoir affiché
-    st.session_state.pending_message = None
-
 if not st.session_state.user_logged_in:
     st.markdown("""
         <div style="text-align: center; margin-top: 120px; margin-bottom: 60px;">
@@ -1702,6 +1688,20 @@ elif st.session_state.user_logged_in and st.session_state.app_mode is None:
         st.markdown("</div>", unsafe_allow_html=True)
 
 elif st.session_state.app_mode == "tasks":
+    # Afficher les messages persistants après un rerun
+    if st.session_state.pending_message:
+        msg_type, msg_text = st.session_state.pending_message
+        if msg_type == "warning":
+            st.warning(msg_text)
+        elif msg_type == "success":
+            st.success(msg_text)
+        elif msg_type == "error":
+            st.error(msg_text)
+        elif msg_type == "info":
+            st.info(msg_text)
+        # Effacer le message après l'avoir affiché
+        st.session_state.pending_message = None
+    
     db.check_deadlines_and_create_tasks()
     
     col1, col2, col3 = st.columns([3, 1, 1])
@@ -2009,10 +2009,14 @@ elif st.session_state.app_mode == "tasks":
                     if 'deadline_preset' in st.session_state:
                         del st.session_state.deadline_preset
                     
-                    # Upload automatique sur GitHub via Git natif
-                    git_success, git_message = auto_save_to_github()
+                    # Synchronisation avec GitHub via API
+                    git_success, git_message = github_backup.upload_to_github(
+                        "Python/team_tasks.db",
+                        commit_message=f"Nouvelle tâche: {title}",
+                        repo_filename="team_tasks.db"
+                    )
+                    
                     if not git_success:
-                        # Sauvegarder le message pour l'afficher après le rerun
                         st.session_state.pending_message = ("warning", f"⚠️ Tâche ajoutée localement mais GitHub sync a échoué: {git_message}")
                     else:
                         st.session_state.pending_message = ("success", f"✅ Tâche ajoutée et assignée à {assigned_to} !")
@@ -2560,6 +2564,20 @@ elif st.session_state.app_mode == "tasks":
                     st.markdown(''.join(html_parts), unsafe_allow_html=True)
 
 elif st.session_state.app_mode == "listings":
+    # Afficher les messages persistants après un rerun
+    if st.session_state.pending_message:
+        msg_type, msg_text = st.session_state.pending_message
+        if msg_type == "warning":
+            st.warning(msg_text)
+        elif msg_type == "success":
+            st.success(msg_text)
+        elif msg_type == "error":
+            st.error(msg_text)
+        elif msg_type == "info":
+            st.info(msg_text)
+        # Effacer le message après l'avoir affiché
+        st.session_state.pending_message = None
+    
     db.check_deadlines_and_create_tasks()
     
     col1, col2, col3 = st.columns([3, 1, 1])
@@ -2647,16 +2665,21 @@ elif st.session_state.app_mode == "listings":
                                     managed_by=current_user
                                 )
                             
-                            # Upload automatique sur GitHub via Git natif
-                            git_success, git_message = auto_save_to_github()
+                            # Synchronisation avec GitHub via API
+                            git_success, git_message = github_backup.upload_to_github(
+                                "Python/team_tasks.db",
+                                commit_message=f"Nouvelle fiche: {business_name}",
+                                repo_filename="team_tasks.db"
+                            )
+                            
                             if not git_success:
-                                st.warning(f"⚠️ GitHub sync a échoué: {git_message}")
-                            
-                            if create_local_service:
-                                st.success(f"✅ Fiche Google et Service Local ajoutés avec succès !")
+                                msg = "Fiche Google et Service Local ajoutés" if create_local_service else "Fiche Google ajoutée"
+                                st.session_state.pending_message = ("warning", f"⚠️ {msg} localement mais GitHub sync a échoué: {git_message}")
                             else:
-                                st.success(f"✅ Fiche Google ajoutée avec succès !")
-                            
+                                if create_local_service:
+                                    st.session_state.pending_message = ("success", "✅ Fiche Google et Service Local ajoutés avec succès !")
+                                else:
+                                    st.session_state.pending_message = ("success", "✅ Fiche Google ajoutée avec succès !")
                             st.rerun()
                         else:
                             st.error("⚠️ Le nom de l'entreprise et le nom du client sont obligatoires")
@@ -2834,12 +2857,17 @@ elif st.session_state.app_mode == "listings":
                                 phone, email, description, current_user
                             )
                             
-                            # Upload automatique sur GitHub via Git natif
-                            git_success, git_message = auto_save_to_github()
-                            if not git_success:
-                                st.warning(f"⚠️ GitHub sync a échoué: {git_message}")
+                            # Synchronisation avec GitHub via API
+                            git_success, git_message = github_backup.upload_to_github(
+                                "Python/team_tasks.db",
+                                commit_message=f"Nouveau service: {service_name}",
+                                repo_filename="team_tasks.db"
+                            )
                             
-                            st.success(f"✅ Service local ajouté avec succès !")
+                            if not git_success:
+                                st.session_state.pending_message = ("warning", f"⚠️ Service local ajouté localement mais GitHub sync a échoué: {git_message}")
+                            else:
+                                st.session_state.pending_message = ("success", "✅ Service local ajouté avec succès !")
                             st.rerun()
                         else:
                             st.error("⚠️ Le nom du service est obligatoire")
